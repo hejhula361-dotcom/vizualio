@@ -387,7 +387,7 @@ function Process() {
             k prezentaci i tisku.
           </p>
           <Link href="#kontakt" className="mt-4 inline-flex items-center gap-2 text-champagne hover:text-amber">
-            Zahájit spolupráci <ChevronRight className="h-4 w-4" />
+            Spolupracovat <ChevronRight className="h-4 w-4" />
           </Link>
         </motion.div>
         <motion.div

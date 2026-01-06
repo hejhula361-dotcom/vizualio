@@ -41,7 +41,7 @@ export default function Navbar() {
           whileTap={{ scale: 0.97 }}
           className="rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber"
         >
-          Zahájit spolupráci
+          Spolupracovat
         </motion.a>
       </div>
     </header>
