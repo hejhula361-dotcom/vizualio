@@ -7,25 +7,18 @@
 }
 
 body {
-  @apply bg-carbon text-offwhite antialiased dark:bg-carbon dark:text-offwhite;
+  @apply bg-carbon text-offwhite antialiased;
   background: radial-gradient(circle at 20% 20%, rgba(198, 166, 124, 0.07), transparent 35%),
     radial-gradient(circle at 80% 0%, rgba(63, 76, 107, 0.25), transparent 35%),
     #0c0c0c;
 }
 
-body:not(.dark) {
-  @apply bg-light-bg text-light-text;
-  background: radial-gradient(circle at 20% 20%, rgba(139, 111, 71, 0.05), transparent 35%),
-    radial-gradient(circle at 80% 0%, rgba(245, 243, 240, 0.3), transparent 35%),
-    #faf9f6;
-}
-
 a {
-  @apply text-offwhite dark:text-offwhite text-light-text;
+  @apply text-offwhite;
 }
 
 .glass-panel {
-  @apply border border-white/10 bg-charcoal/70 backdrop-blur-lg dark:border-white/10 dark:bg-charcoal/70 border-light-border bg-light-card;
+  @apply border border-white/10 bg-charcoal/70 backdrop-blur-lg;
 }
 
 .section-container {
@@ -33,11 +26,11 @@ a {
 }
 
 .section-title {
-  @apply text-3xl md:text-4xl font-semibold tracking-tight text-offwhite dark:text-offwhite text-light-text;
+  @apply text-3xl md:text-4xl font-semibold tracking-tight text-offwhite;
 }
 
 .section-subtitle {
-  @apply text-lg text-stone mt-4 max-w-3xl dark:text-stone text-light-text-secondary;
+  @apply text-lg text-stone mt-4 max-w-3xl;
 }
 
 .card {
@@ -48,16 +41,6 @@ a {
   box-shadow: 0 0 40px rgba(198, 166, 124, 0.25);
   transform: translateY(-4px);
   border-color: rgba(198, 166, 124, 0.4);
-}
-
-.dark .card-hover:hover {
-  box-shadow: 0 0 40px rgba(198, 166, 124, 0.25);
-  border-color: rgba(198, 166, 124, 0.4);
-}
-
-:not(.dark) .card-hover:hover {
-  box-shadow: 0 0 40px rgba(139, 111, 71, 0.2);
-  border-color: rgba(139, 111, 71, 0.3);
 }
 
 
