@@ -250,19 +250,19 @@ function Hero() {
             priority
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-carbon" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-carbon dark:from-black/60 dark:to-carbon from-white/40 to-light-bg" />
       </div>
       <div className="relative section-container flex min-h-[80vh] flex-col justify-center gap-8">
         <motion.div {...fadeInUp} className="max-w-3xl space-y-5">
-          <p className="text-champagne text-sm uppercase tracking-[0.2em]">Vizualio Studio</p>
-          <h1 className="font-semibold leading-tight text-4xl md:text-5xl lg:text-6xl text-offwhite">
+          <p className="text-champagne text-sm uppercase tracking-[0.2em] dark:text-champagne text-light-accent">Vizualio Studio</p>
+          <h1 className="font-semibold leading-tight text-4xl md:text-5xl lg:text-6xl text-offwhite dark:text-offwhite text-light-text">
             Proměníme váš nápad v prostor, který prodává.
           </h1>
-          <p className="text-lg text-stone max-w-2xl">
+          <p className="text-lg text-stone max-w-2xl dark:text-stone text-light-text-secondary">
             Fotorealistické 3D vizualizace interiérů, exteriérů i nábytku na míru. Uvidíte svůj
             projekt ještě před realizací — vy i vaši klienti.
           </p>
-          <p className="text-stone">
+          <p className="text-stone dark:text-stone text-light-text-secondary">
             Pro developery, realitní kanceláře, architekty, truhláře i soukromé klienty.
           </p>
           <div className="flex flex-wrap gap-4 pt-2">
@@ -274,7 +274,7 @@ function Hero() {
         </motion.div>
         <motion.div
           {...staggerContainer}
-          className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-charcoal/80 p-6 backdrop-blur-lg sm:grid-cols-3"
+          className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-charcoal/80 p-6 backdrop-blur-lg dark:border-white/10 dark:bg-charcoal/80 border-light-border bg-light-card sm:grid-cols-3"
         >
           {[
             { label: "Preciznost", value: "Modely v měřítku" },
@@ -282,8 +282,8 @@ function Hero() {
             { label: "Rychlost", value: "2–4 dny menší projekty" }
           ].map((item) => (
             <motion.div key={item.label} {...fadeInUp} className="space-y-2">
-              <p className="text-stone text-sm">{item.label}</p>
-              <p className="text-offwhite font-semibold">{item.value}</p>
+              <p className="text-stone text-sm dark:text-stone text-light-text-secondary">{item.label}</p>
+              <p className="text-offwhite font-semibold dark:text-offwhite text-light-text">{item.value}</p>
             </motion.div>
           ))}
         </motion.div>

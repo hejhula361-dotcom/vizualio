@@ -27,8 +27,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="cs" className={`${inter.variable} ${grotesk.variable}`}>
-      <body className="bg-carbon text-offwhite min-h-screen">
+    <html lang="cs" className={`${inter.variable} ${grotesk.variable}`} suppressHydrationWarning>
+      <body className="bg-carbon text-offwhite min-h-screen dark:bg-carbon dark:text-offwhite bg-light-bg text-light-text">
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <Navbar />
