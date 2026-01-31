@@ -4,18 +4,35 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
-import clsx from "clsx";
 
 const navLinks = [
-  { href: "#sluzby", label: "Služby" },
   { href: "#proc", label: "Proč my" },
-  { href: "#portfolio", label: "Portfolio" },
-  { href: "#cenik", label: "Ceník" },
+  { href: "/portfolio", label: "Portfolio" },
+  { href: "/cenik", label: "Ceník" },
   { href: "#kontakt", label: "Kontakt" }
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
+
+  if (isAdmin) {
+    return (
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-carbon/70 backdrop-blur-lg w-full">
+        <div className="flex w-full items-center justify-between px-6 h-20">
+          <Link href="/" className="flex items-center gap-3">
+            <Image src="/img/logo.svg" alt="Vizualio" width={48} height={48} className="h-28 w-28" />
+          </Link>
+          <Link
+            href="/"
+            className="rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-offwhite transition hover:border-champagne hover:text-champagne"
+          >
+            Zpět na web
+          </Link>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-carbon/70 backdrop-blur-lg">

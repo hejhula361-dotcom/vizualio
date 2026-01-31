@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const faq = [
   {
@@ -25,7 +25,22 @@ const faq = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
+
+  if (isAdmin) {
+    return (
+      <footer className="border-t border-white/10 bg-charcoal/70 backdrop-blur-lg">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 pt-6">
+            <p className="text-offwhite font-medium">© 2025 Vizualio</p>
+            <p className="text-sm text-stone">3D vizualizace interiérů, exteriérů a nábytku na míru.</p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   return (
     <footer className="border-t border-white/10 bg-charcoal/70 backdrop-blur-lg">

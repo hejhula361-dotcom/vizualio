@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="cs" className={`${inter.variable} ${grotesk.variable}`}>
+    <html lang="cs" className={`scroll-smooth ${inter.variable} ${grotesk.variable}`}>
       <body className="bg-carbon text-offwhite min-h-screen">
         <Providers>
           <div className="relative flex min-h-screen flex-col">

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Video Scroll Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: sans-serif;
+      background: #000;
+      color: #fff;
+    }
+    #hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #heroVideo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .content {
+      height: 200vh;
+      background: #222;
+      padding: 50px;
+    }
+  </style>
+</head>
+<body>
+  <section id="hero">
+    <video
+      id="heroVideo"
+      src="assets/video/hero.mp4"
+      muted
+      playsinline
+      preload="auto"
+    ></video>
+  </section>
+
+  <div class="content">
+    <h1>Scroll down to test video scrub</h1>
+    <p>Video should scrub as you scroll through the hero section.</p>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const video = document.getElementById("heroVideo");
+    
+    // Wait for video to load
+    video.addEventListener("loadeddata", function() {
+      console.log("Video loaded, duration:", video.duration);
+      
+      // Pause video and set to start
+      video.pause();
+      video.currentTime = 0;
+      
+      const duration = video.duration;
+      
+      // Create ScrollTrigger
+      ScrollTrigger.create({
+        trigger: "#hero",
+        start: "top top",
+        end: "+=1400",
+        scrub: true,
+        pin: true,
+        onUpdate: function(self) {
+          const progress = self.progress;
+          const time = progress * duration;
+          video.currentTime = time;
+          console.log("Progress:", progress.toFixed(2), "Time:", time.toFixed(2));
+        }
+      });
+      
+      console.log("ScrollTrigger created!");
+    });
+    
+    // Fallback - also try when metadata loads
+    video.addEventListener("loadedmetadata", function() {
+      console.log("Metadata loaded, duration:", video.duration);
+      if (video.readyState >= 2) {
+        video.pause();
+        video.currentTime = 0;
+        
+        setTimeout(function() {
+          const duration = video.duration;
+          
+          ScrollTrigger.create({
+            trigger: "#hero",
+            start: "top top",
+            end: "+=1400",
+            scrub: true,
+            pin: true,
+            onUpdate: function(self) {
+              const progress = self.progress;
+              const time = progress * duration;
+              video.currentTime = time;
+              console.log("Progress:", progress.toFixed(2), "Time:", time.toFixed(2));
+            }
+          });
+          
+          console.log("ScrollTrigger created from metadata!");
+        }, 500);
+      }
+    });
+  </script>
+</body>
+</html>
+

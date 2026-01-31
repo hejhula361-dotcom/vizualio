@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import {
   Sparkles,
   Clock3,
@@ -16,8 +16,8 @@ import {
   CheckCircle2,
   Star,
   Quote,
+  ChevronLeft,
   ChevronRight,
-  Shield,
   Zap,
   Layers,
   Mail
@@ -62,39 +62,39 @@ const benefits = [
   }
 ];
 
-const services = [
+const sluzbyCards = [
   {
-    icon: Sofa,
-    title: "Fotorealistické interiéry",
-    desc: "Kompozice, materiály, světlo — vizualizace k nerozeznání od reálné fotografie."
+    type: "featured",
+    title: "Kuchyně",
+    desc: "Detailní 3D vizualizace kuchyně – top produkt pro realitky a developery.",
+    price: "3 500 Kč",
+    priceLabel: "Cena od",
+    includes: ["Detailní 3D se všemi prvky", "Přístrojové vybavení + osvětlení", "2 kola úprav zdarma"],
+    badge: "Nejprodávanější"
   },
   {
-    icon: Palette,
-    title: "Kuchyně a nábytek na míru",
-    desc: "Modelujeme ve správných rozměrech, aby klient přesně chápal funkci v prostoru."
+    type: "exterior",
+    title: "Rodinný dům (Bungalov)",
+    desc: "Jednoduchá architektura, jednopodlažní dům.",
+    price: "5 500 Kč",
+    priceLabel: "Cena od",
+    includes: ["Exteriérová vizualizace", "Jednoduché zahrady"]
   },
   {
-    icon: Home,
-    title: "Virtuální homestaging",
-    desc: "Prázdný byt zaplníme stylem a atmosférou. Vizuál, který prodává bez stěhování."
-  },
-  {
-    icon: Building2,
-    title: "Exteriéry a developerské projekty",
-    desc: "Atmosféra, světlo v různých dobách, detaily, které zaujmou investory."
-  },
-  {
-    icon: Package,
-    title: "3D produktové renderování",
-    desc: "Luxusně čisté rendery nábytku, světel či doplňků pro web, katalog i reklamu."
+    type: "floorplan",
+    title: "Balíček 2D+3D",
+    desc: "Kompletní řešení – oba výkresy za zvýhodněnou cenu.",
+    price: "1 399 Kč",
+    oldPrice: "1 499 Kč",
+    badge: "Ušetříte 100 Kč"
   }
 ];
 
 const whyUs = [
   {
-    icon: Shield,
+    icon: Ruler,
     title: "Přesnost, která rozhoduje",
-    desc: "Každý model je v měřítku. Co vidíte, to můžete postavit."
+    desc: "Každý prostor modelujeme podle skutečných rozměrů. Vizualizaci, odpovídá realitě."
   },
   {
     icon: Layers,
@@ -211,36 +211,32 @@ export default function Page() {
       <Hero />
       <Services />
       <WhyUs />
-      <Process />
       <Portfolio />
+      <Process />
       <Testimonials />
-      <Pricing />
       <Contact />
     </div>
   );
 }
 
 function Hero() {
-  const [scrollY, setScrollY] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"]
+  });
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scale = Math.max(1.2 - scrollY * 0.0005, 1);
-  const translateY = Math.min(scrollY * 0.3, 200);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.05, 1.12]);
+  const yBackground = useTransform(scrollYProgress, [0, 0.5, 1], [0, -15, -30]);
+  const yContent = useTransform(scrollYProgress, [0, 0.5, 1], [0, 20, 60]);
+  const opacityContent = useTransform(scrollYProgress, [0, 0.3], [1, 0.7]);
 
   return (
-    <section id="hero" className="relative overflow-hidden">
+    <section ref={sectionRef} id="hero" className="relative overflow-hidden">
       <div className="absolute inset-0">
-        <div
-          style={{
-            transform: `scale(${scale}) translateY(${translateY}px)`,
-            willChange: "transform"
-          }}
-          className="absolute inset-0"
+        <motion.div
+          style={{ scale, y: yBackground }}
+          className="absolute inset-0 origin-center"
         >
           <Image
             src="/img/hero_background.png"
@@ -249,18 +245,21 @@ function Hero() {
             className="object-cover opacity-60"
             priority
           />
-        </div>
+        </motion.div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-carbon" />
       </div>
-      <div className="relative section-container flex min-h-[80vh] flex-col justify-center gap-8">
+      <motion.div
+        style={{ y: yContent, opacity: opacityContent }}
+        className="relative section-container flex min-h-[80vh] flex-col justify-center gap-8"
+      >
         <motion.div {...fadeInUp} className="max-w-3xl space-y-5">
-          <p className="text-champagne text-sm uppercase tracking-[0.2em]">Vizualio Studio</p>
+          <p className="text-champagne text-sm font-medium uppercase tracking-[0.2em]">Vizualio Studio</p>
           <h1 className="font-semibold leading-tight text-4xl md:text-5xl lg:text-6xl text-offwhite">
-            Proměníme váš nápad v prostor, který prodává.
+            Realita začíná vizualizací.
           </h1>
           <p className="text-lg text-stone max-w-2xl">
             Fotorealistické 3D vizualizace interiérů, exteriérů i nábytku na míru. Uvidíte svůj
-            projekt ještě před realizací — vy i vaši klienti.
+            projekt ještě před realizací — Vy i Vaši klienti.
           </p>
           <p className="text-stone">
             Pro developery, realitní kanceláře, architekty, truhláře i soukromé klienty.
@@ -274,20 +273,33 @@ function Hero() {
         </motion.div>
         <motion.div
           {...staggerContainer}
-          className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-charcoal/80 p-6 backdrop-blur-lg sm:grid-cols-3"
+          className="grid gap-4 rounded-2xl border border-white/10 bg-carbon/70 p-5 backdrop-blur-lg md:grid-cols-3"
         >
           {[
-            { label: "Preciznost", value: "Modely v měřítku" },
-            { label: "Cena", value: "Zvyšuje hodnotu vašeho projektu" },
-            { label: "Rychlost", value: "2–4 dny menší projekty" }
-          ].map((item) => (
-            <motion.div key={item.label} {...fadeInUp} className="space-y-2">
-              <p className="text-stone text-sm">{item.label}</p>
-              <p className="text-offwhite font-semibold">{item.value}</p>
-            </motion.div>
+            { label: "Dodané vizualizace", value: "40+" },
+            {
+              label: "Hodnocení",
+              value: (
+                <span className="flex gap-0.5">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-8 w-8 text-offwhite fill-offwhite" />
+                  ))}
+                </span>
+              )
+            },
+            { label: "Průměrná doba dodání", value: "2–5 dní" }
+          ].map((stat) => (
+            <div key={stat.label} className="space-y-2">
+              <p className="text-stone text-sm">{stat.label}</p>
+              {typeof stat.value === "string" ? (
+                <p className="text-3xl font-semibold text-offwhite">{stat.value}</p>
+              ) : (
+                <div className="text-3xl font-semibold text-offwhite">{stat.value}</div>
+              )}
+            </div>
           ))}
         </motion.div>
-      </div>
+      </motion.div>
     </section>
   );
 }
@@ -298,9 +310,9 @@ function Services() {
     <section id="sluzby" className="section-container">
       <motion.div {...fadeInUp} className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="section-title">Služby, které prodávají</h2>
+          <h2 className="section-title">Služby, které nabízíme</h2>
           <p className="section-subtitle max-w-2xl">
-            Od interiérů po produkty. Každá vizualizace má jeden cíl — přesvědčit na první pohled.
+            Profesionální vizualizace pro realitky, developery a interiéry
           </p>
         </div>
       </motion.div>
@@ -308,17 +320,55 @@ function Services() {
         {...staggerContainer}
         className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
       >
-        {services.map((service) => (
+        {sluzbyCards.map((item) => (
           <motion.div
-            key={service.title}
+            key={item.title}
             {...fadeInUp}
-            className="card card-hover h-full"
+            className="card-hover relative rounded-2xl border border-white/10 bg-charcoal/50 p-8 transition duration-300"
           >
-            <service.icon className="h-9 w-9 text-champagne" />
-            <h3 className="mt-4 text-xl font-semibold text-offwhite">{service.title}</h3>
-            <p className="mt-3 text-sm text-stone">{service.desc}</p>
+            {item.badge && (
+              <div
+                className={
+                  item.type === "floorplan"
+                    ? "absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-champagne px-5 py-1 text-xs font-bold uppercase text-carbon whitespace-nowrap min-w-[140px] text-center"
+                    : "absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-champagne px-3 py-1 text-xs font-bold uppercase text-carbon"
+                }
+              >
+                {item.type !== "floorplan" && <Star className="h-3 w-3" />}
+                {item.badge}
+              </div>
+            )}
+            <h3 className="text-xl font-semibold text-offwhite mb-4">{item.title}</h3>
+            <p className="text-stone text-sm mb-6 leading-relaxed">{item.desc}</p>
+            <div className="rounded-xl bg-white/5 p-5 mb-6 border-l-4 border-champagne">
+              {item.priceLabel && (
+                <p className="text-stone text-xs font-medium uppercase tracking-wide mb-1">
+                  {item.priceLabel}
+                </p>
+              )}
+              <p className="text-3xl font-bold text-champagne">{item.price}</p>
+              {item.oldPrice && (
+                <p className="text-stone text-xs line-through mt-1">{item.oldPrice}</p>
+              )}
+            </div>
           </motion.div>
         ))}
+      </motion.div>
+      <motion.div {...fadeInUp} className="mt-10 flex items-center justify-center gap-4 max-w-2xl mx-auto">
+        <div className="flex-1 flex items-center justify-end gap-0 min-w-0">
+          <div className="h-px flex-1 max-w-[80px] bg-champagne/50" />
+          <ChevronRight className="h-5 w-5 flex-shrink-0 text-champagne/70" />
+        </div>
+        <Link
+          href="/cenik"
+          className="inline-flex items-center gap-2 rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber flex-shrink-0"
+        >
+          Všechny služby a ceník
+        </Link>
+        <div className="flex-1 flex items-center justify-start gap-0 min-w-0">
+          <ChevronLeft className="h-5 w-5 flex-shrink-0 text-champagne/70" />
+          <div className="h-px flex-1 max-w-[80px] bg-champagne/50" />
+        </div>
       </motion.div>
     </section>
   );
@@ -326,11 +376,11 @@ function Services() {
 
 function WhyUs() {
   return (
-    <section id="proc" className="section-container">
+    <section id="proc" className="section-container pt-1.5 pb-0 md:pt-1.5">
       <motion.div {...fadeInUp} className="max-w-3xl">
         <h2 className="section-title">Proč Vizualio</h2>
         <p className="section-subtitle">
-          Přesnost, filmová atmosféra, rychlá komunikace. Workflow, které se přizpůsobí vašemu projektu.
+          Cit pro detail, přesnost, rychlá komunikaci, nejmodernější technologie a mnohem víc - to z nás dělá nejlepšího kandidáta.
         </p>
       </motion.div>
       <motion.div
@@ -347,21 +397,6 @@ function WhyUs() {
             <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
             <p className="mt-2 text-sm text-stone">{item.desc}</p>
           </motion.div>
-        ))}
-      </motion.div>
-      <motion.div
-        {...fadeInUp}
-        className="mt-12 grid gap-6 rounded-2xl border border-white/10 bg-gradient-to-br from-charcoal/90 to-obsidian/80 p-8 backdrop-blur-lg md:grid-cols-3"
-      >
-        {[
-          { label: "Dodané vizualizace", value: "1200+" },
-          { label: "Průměrná úspora času", value: "40 %" },
-          { label: "Průměrná doba dodání", value: "3 dny" }
-        ].map((stat) => (
-          <div key={stat.label} className="space-y-2">
-            <p className="text-stone text-sm">{stat.label}</p>
-            <p className="text-3xl font-semibold text-offwhite">{stat.value}</p>
-          </div>
         ))}
       </motion.div>
     </section>
@@ -417,7 +452,7 @@ function Process() {
 
 function Portfolio() {
   return (
-    <section id="portfolio" className="section-container">
+    <section id="portfolio" className="section-container pt-6 md:pt-6">
       <motion.div {...fadeInUp} className="max-w-3xl">
         <h2 className="section-title">Prostor, který mluví za vás.</h2>
         <p className="section-subtitle">

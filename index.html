@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="cs" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vizualio – 3D vizualizace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              carbon: "#0C0C0C",
+              offwhite: "#F8F8F5",
+              champagne: "#C6A67C",
+              stone: "#9F9F9F",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      body {
+        font-family: "Montserrat", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background-color: #0c0c0c;
+        color: #f8f8f5;
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* Reset default margins/padding */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        overflow-x: hidden;
+      }
+      
+      body {
+        min-height: 100vh;
+      }
+      
+      /* Ensure hero video covers full viewport */
+      #hero {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* Ensure header doesn't create space - absolutely positioned */
+      header {
+        position: fixed;
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+      }
+      
+      /* Remove any top margin/padding from body */
+      body {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+      }
+      
+      /* Smooth scrolling performance - disable browser smooth scroll for GSAP control */
+      html {
+        scroll-behavior: auto;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
+      }
+      
+      /* Disable momentum scrolling on iOS for better control */
+      body {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+      }
+    </style>
+  </head>
+  <body class="bg-carbon text-offwhite overflow-x-hidden">
+    <!-- NAVBAR - Floating Glass Panel -->
+    <header
+      id="mainHeader"
+      class="fixed top-4 left-1/2 transform -translate-x-1/2 z-30 max-w-6xl w-full px-4 transition-all duration-300 pointer-events-none"
+    >
+      <div
+        class="bg-carbon/70 backdrop-blur-md border border-white/10 rounded-full md:rounded-full rounded-2xl shadow-lg transition-all duration-300 px-4 md:px-6 py-2 md:py-2.5 pointer-events-auto"
+      >
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <a href="#hero" class="flex items-center">
+            <img 
+              id="logo-img" 
+              src="assets/img/logo.png" 
+              alt="Vizualio" 
+              class="h-6 md:h-7 w-auto"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+            />
+            <span id="logo-text" class="font-semibold tracking-wide uppercase text-sm text-offwhite" style="display: none;">
+              Vizualio
+            </span>
+          </a>
+
+          <!-- Desktop Navigation -->
+          <nav class="hidden lg:flex items-center gap-6 text-xs tracking-wide uppercase">
+            <a href="#sluzby" class="nav-link text-stone hover:text-offwhite transition-colors duration-200" data-section="sluzby">Služby &amp; Ceník</a>
+            <a href="#portfolio" class="nav-link text-stone hover:text-offwhite transition-colors duration-200" data-section="portfolio">Portfolio</a>
+            <a href="#proc-vizualio" class="nav-link text-stone hover:text-offwhite transition-colors duration-200" data-section="proc-vizualio">Proč Vizualio</a>
+          </nav>
+
+          <!-- Desktop CTA Button -->
+          <a
+            href="#kontakt"
+            class="hidden lg:inline-flex items-center px-4 py-2 rounded-full bg-champagne text-carbon text-xs font-semibold tracking-wide uppercase hover:bg-champagne/90 transition-colors duration-200"
+          >
+            Kontakt / Poptávka
+          </a>
+
+          <!-- Mobile Hamburger Button -->
+          <button
+            id="mobile-menu-btn"
+            class="lg:hidden flex items-center justify-center w-8 h-8 text-offwhite hover:text-champagne transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg id="hamburger-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="hidden lg:hidden mt-4 pt-4 border-t border-white/10"
+        >
+          <nav class="flex flex-col gap-3 pb-4">
+            <a href="#sluzby" class="nav-link text-stone hover:text-offwhite transition-colors duration-200 text-xs tracking-wide uppercase py-2" data-section="sluzby">Služby &amp; Ceník</a>
+            <a href="#portfolio" class="nav-link text-stone hover:text-offwhite transition-colors duration-200 text-xs tracking-wide uppercase py-2" data-section="portfolio">Portfolio</a>
+            <a href="#proc-vizualio" class="nav-link text-stone hover:text-offwhite transition-colors duration-200 text-xs tracking-wide uppercase py-2" data-section="proc-vizualio">Proč Vizualio</a>
+            <a
+              href="#kontakt"
+              class="inline-flex items-center justify-center px-4 py-2.5 rounded-full bg-champagne text-carbon text-xs font-semibold tracking-wide uppercase hover:bg-champagne/90 transition-colors duration-200 mt-2"
+            >
+              Kontakt / Poptávka
+            </a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- HERO SEKCIA S VIDEEM -->
+    <section
+      id="hero"
+      class="relative w-screen h-screen flex items-center justify-center overflow-hidden"
+    >
+      <!-- video background -->
+<video
+  id="heroVideo"
+  class="absolute inset-0 w-full h-full object-cover"
+  muted
+  playsinline
+  preload="auto"
+  autoplay="false"
+  webkit-playsinline
+  loop="false"
+></video>
+
+
+      <!-- dark overlay -->
+      <div class="absolute inset-0 bg-carbon/60"></div>
+
+      <!-- content -->
+      <div
+        class="relative z-10 max-w-3xl mx-auto px-4 text-center flex flex-col items-center justify-center min-h-screen pt-28 md:pt-32"
+      >
+        <p class="text-xs tracking-[0.4em] uppercase text-stone mb-4">
+          3D Vizualizace
+        </p>
+        <h1 class="text-3xl md:text-5xl font-semibold mb-6 leading-tight text-offwhite">
+          Proměníme váš nápad v prostor, který prodává.
+        </h1>
+        <p class="text-sm md:text-base text-stone mb-8 leading-relaxed">
+          Fotorealistické 3D vizualizace interiérů, exteriérů a nábytku na míru.
+          <br class="hidden md:block" />
+          Uvidíte svůj projekt ještě před realizací – vy i vaši klienti.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 mb-4">
+          <a
+            href="#kontakt"
+            class="px-6 py-3 rounded-full bg-champagne text-carbon font-semibold text-sm hover:bg-champagne/90 transition-colors duration-200"
+          >
+            Nezávazně poptat vizualizaci
+          </a>
+          <a
+            href="#portfolio"
+            class="px-6 py-3 rounded-full border border-offwhite/40 text-offwhite text-sm font-semibold hover:border-offwhite transition-colors duration-200"
+          >
+            Podívat se na portfolio
+          </a>
+        </div>
+        <p class="text-[11px] md:text-xs text-stone/80 mb-16">
+          Pro developery, realitní kanceláře, architekty, truhláře i soukromé
+          klienty.
+        </p>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 fade-up">
+          <div class="w-px h-16 bg-champagne/60"></div>
+          <svg class="w-5 h-5 text-champagne/60 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+        <!-- OBSAH STRÁNKY POD HERO -->
+    <main class="bg-carbon">
+
+      <!-- IDEA SECTION -->
+      <section
+        id="idea"
+        class="min-h-[70vh] bg-carbon relative flex items-center px-4 py-20 md:py-24"
+      >
+        <div
+          class="absolute inset-0 bg-[url('assets/img/hallway_gold_1.jpg')] bg-cover bg-center opacity-40"
+        ></div>
+        <div class="absolute inset-0 bg-carbon/70"></div>
+
+        <div class="relative max-w-4xl mx-auto fade-up">
+          <div class="border-t border-champagne/30 w-16 mb-4"></div>
+          <h2 class="text-2xl md:text-4xl font-semibold mb-6 text-offwhite">
+            Máte v hlavě prostor, který chcete vidět ještě před realizací?
+          </h2>
+          <p class="text-stone leading-relaxed mb-6">
+            Ať už prodáváte byt, navrhujete kuchyň na míru nebo plánujete
+            kompletní rekonstrukci, rozhodování je vždy o představivosti.
+            My vám ji usnadníme.
+          </p>
+          <p class="text-stone leading-relaxed mb-8">
+            Popište nám svůj nápad a my z něj vytvoříme vizualizaci, která se co
+            nejvíc blíží realitě – v přesných rozměrech, se světlem, materiály
+            a atmosférou skutečného prostoru.
+          </p>
+          <a
+            href="#kontakt"
+            class="inline-flex px-6 py-3 rounded-full bg-champagne text-carbon font-semibold text-sm hover:bg-champagne/90 transition"
+          >
+            Chci vám svěřit svůj nápad
+          </a>
+        </div>
+      </section>
+
+      <!-- KONTAKT / POPTÁVKA -->
+      <section
+        id="kontakt"
+        class="min-h-[80vh] relative flex items-center px-4 py-20 md:py-24"
+      >
+        <div
+          class="absolute inset-0 bg-[url('assets/img/hallway_gold_2.jpg')] bg-cover bg-center opacity-40"
+        ></div>
+        <div class="absolute inset-0 bg-carbon/80"></div>
+
+        <div
+          class="relative max-w-4xl mx-auto grid md:grid-cols-2 gap-10 items-start fade-up"
+        >
+          <div>
+            <div class="border-t border-champagne/30 w-16 mb-4"></div>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-offwhite">
+              Napište nám, co máte v hlavě
+            </h2>
+            <p class="text-stone leading-relaxed mb-4">
+              Necháme za sebe mluvit prostor. Zanechte nám na sebe kontakt,
+              ozveme se s návrhem řešení a orientační kalkulací.
+            </p>
+            <p class="text-stone text-sm leading-relaxed">
+              Čím víc detailů k prostoru, účelu a stylu nám dáte, tím přesnější
+              a užitečnější vizualizaci pro vás připravíme.
+            </p>
+          </div>
+
+          <!-- jednoduchý formulář, který pošleme do PHP -->
+          <form
+            action="contact_submit.php"
+            method="POST"
+            class="bg-carbon/90 border border-white/5 rounded-2xl p-5 md:p-6 space-y-4 shadow-lg relative overflow-hidden"
+          >
+            <!-- Accent corner -->
+            <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+            <div>
+              <label class="block text-sm mb-1" for="idea">
+                Co máte na mysli?
+              </label>
+              <textarea
+                id="idea"
+                name="idea"
+                rows="4"
+                required
+                class="w-full rounded-xl bg-carbon border border-white/10 px-3 py-2 text-sm text-offwhite focus:outline-none focus:border-champagne transition-colors"
+                placeholder="Popište prostor, účel, rozměry, styl…"
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm mb-1" for="name">Jméno</label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                class="w-full rounded-xl bg-carbon border border-white/10 px-3 py-2 text-sm text-offwhite focus:outline-none focus:border-champagne transition-colors"
+                placeholder="Jak vám máme říkat?"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm mb-1" for="email">E-mail</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                class="w-full rounded-xl bg-carbon border border-white/10 px-3 py-2 text-sm text-offwhite focus:outline-none focus:border-champagne transition-colors"
+                placeholder="kam vám můžeme odpovědět"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm mb-1" for="phone">Telefon</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                class="w-full rounded-xl bg-carbon border border-white/10 px-3 py-2 text-sm text-offwhite focus:outline-none focus:border-champagne transition-colors"
+                placeholder="volitelné, ale často pomůže"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm mb-1" for="budget">Rozpočet (volitelné)</label>
+              <input
+                id="budget"
+                name="budget"
+                type="text"
+                class="w-full rounded-xl bg-carbon border border-white/10 px-3 py-2 text-sm text-offwhite focus:outline-none focus:border-champagne transition-colors"
+                placeholder="např. 10–20 tisíc, 50+ bytů…"
+              />
+            </div>
+
+            <button
+              type="submit"
+              class="w-full mt-2 px-6 py-3 rounded-full bg-champagne text-carbon font-semibold text-sm hover:bg-champagne/90 transition"
+            >
+              Odeslat poptávku
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- SLUŽBY -->
+      <section id="sluzby" class="py-20 md:py-24 px-4 bg-carbon">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-12 fade-up">
+            <div class="border-t border-champagne/30 w-16 mx-auto mb-4"></div>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-3 text-offwhite">
+              Co pro vás dokážeme vizualizovat
+            </h2>
+            <p class="text-stone max-w-2xl mx-auto leading-relaxed">
+              Od jednotlivých místností přes celé byty až po developerské projekty.
+              Vždy s důrazem na realističnost, kompozici a detail.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <!-- karta 1 -->
+            <article
+              class="relative rounded-2xl border border-white/5 bg-carbon/90 shadow-lg p-6 flex flex-col h-full fade-up overflow-hidden"
+            >
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              
+              <h3 class="text-lg font-semibold mb-3 text-offwhite">
+                Fotorealistické interiéry
+              </h3>
+              <p class="text-sm text-stone mb-4 leading-relaxed">
+                Obývací pokoje, ložnice, koupelny, kanceláře. Z prázdného
+                prostoru vytvoříme scénu, ve které si klient dokáže
+                představit svůj budoucí život.
+              </p>
+              <p class="text-xs text-stone/80 mt-auto leading-relaxed">
+                Každý kus nábytku, každé světlo a materiál je nastavený tak,
+                aby odpovídal realitě.
+              </p>
+            </article>
+
+            <!-- karta 2 -->
+            <article
+              class="relative rounded-2xl border border-white/5 bg-carbon/90 shadow-lg p-6 flex flex-col h-full fade-up overflow-hidden"
+            >
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              
+              <h3 class="text-lg font-semibold mb-3 text-offwhite">
+                Kuchyně a nábytek na míru
+              </h3>
+              <p class="text-sm text-stone mb-4 leading-relaxed">
+                Navrhujete kuchyň, vestavnou skříň nebo celý interiér na míru?
+                Připravíme vizualizace s přesnými rozměry a detaily – ideální
+                pro komunikaci mezi klientem, truhlářem a designérem.
+              </p>
+              <p class="text-xs text-stone/80 mt-auto leading-relaxed">
+                Díky přesnému modelu víte, jak bude nábytek fungovat v prostoru
+                ještě před výrobou.
+              </p>
+            </article>
+
+            <!-- karta 3 -->
+            <article
+              class="relative rounded-2xl border border-white/5 bg-carbon/90 shadow-lg p-6 flex flex-col h-full fade-up overflow-hidden"
+            >
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              
+              <h3 class="text-lg font-semibold mb-3 text-offwhite">
+                Virtuální homestaging
+              </h3>
+              <p class="text-sm text-stone mb-4 leading-relaxed">
+                Prodáváte prázdný nebo starší byt, který na fotkách nevypadá
+                ideálně? Vytvoříme vizualizace se zařízeným interiérem bez
+                jediného kusu reálného nábytku.
+              </p>
+              <p class="text-xs text-stone/80 mt-auto leading-relaxed">
+                Atraktivní prezentace zvyšuje zájem a zrychluje prodej nemovitosti.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROCES -->
+      <section
+        id="jak-to-probiha"
+        class="py-20 md:py-24 px-4 bg-[url('assets/img/concrete_wall_2.jpg')] bg-cover bg-center relative"
+      >
+        <div class="absolute inset-0 bg-carbon/85"></div>
+        <div class="relative max-w-6xl mx-auto">
+          <div class="text-center mb-10 fade-up">
+            <div class="border-t border-champagne/30 w-16 mx-auto mb-4"></div>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-3 text-offwhite">
+              Jak spolupracujeme
+            </h2>
+            <p class="text-stone max-w-2xl mx-auto leading-relaxed">
+              Jednoduchý proces od prvního nápadu po finální vizualizaci
+              připravenou pro web, tisk nebo prezentaci klientům.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-4 gap-6">
+            <div class="bg-carbon/80 border border-white/5 rounded-2xl p-6 shadow-md fade-up overflow-hidden relative">
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <p class="text-champagne text-sm mb-1 font-semibold">01</p>
+              <h3 class="font-semibold mb-2 text-lg text-offwhite">Zadání &amp; podklady</h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Pošlete nám půdorys, fotky nebo náčrt a popis vaší představy.
+              </p>
+            </div>
+            <div class="bg-carbon/80 border border-white/5 rounded-2xl p-6 shadow-md fade-up overflow-hidden relative">
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <p class="text-champagne text-sm mb-1 font-semibold">02</p>
+              <h3 class="font-semibold mb-2 text-lg text-offwhite">Návrh řešení</h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Upřesníme styl, materiály a rozsah. Navrhneme počet záběrů a
+                orientační cenu.
+              </p>
+            </div>
+            <div class="bg-carbon/80 border border-white/5 rounded-2xl p-6 shadow-md fade-up overflow-hidden relative">
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <p class="text-champagne text-sm mb-1 font-semibold">03</p>
+              <h3 class="font-semibold mb-2 text-lg text-offwhite">Tvorba vizualizace</h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Připravíme 3D model, nasvítíme scénu, doladíme kompozici
+                a materiály. V případě potřeby zapracujeme úpravy.
+              </p>
+            </div>
+            <div class="bg-carbon/80 border border-white/5 rounded-2xl p-6 shadow-md fade-up overflow-hidden relative">
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <p class="text-champagne text-sm mb-1 font-semibold">04</p>
+              <h3 class="font-semibold mb-2 text-lg text-offwhite">Dodání výstupů</h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Dostanete finální obrázky v potřebném rozlišení – připravené
+                pro web, tisk i prezentace.
+              </p>
+            </div>
+          </div>
+
+          <p class="text-xs text-stone/80 mt-8 text-center fade-up leading-relaxed">
+            U složitějších projektů můžeme připravit více variant řešení a různé
+            pohledy na prostor.
+          </p>
+        </div>
+      </section>
+
+      <!-- PORTFOLIO -->
+      <section id="portfolio" class="py-20 md:py-24 px-4 bg-carbon">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-10 fade-up">
+            <div class="border-t border-champagne/30 w-16 mx-auto mb-4"></div>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-3 text-offwhite">
+              Prostor, který mluví za vás
+            </h2>
+            <p class="text-stone max-w-2xl mx-auto leading-relaxed">
+              Ukázky interiérů, exteriérů a detailů, které pomáhají klientům
+              rozhodovat se jistěji a rychleji.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-4 gap-4">
+            <!-- sem si nasypeš svoje reálné obrázky -->
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/hero_livingroom_1.jpg" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/hero_livingroom_2.jpg" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/villa_1.jpg" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/villa_2.jpg" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/hallway_gold_1.jpg" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/hallway_gold_2.jpg" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/concrete_wall_1.jpg" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative overflow-hidden rounded-xl fade-up">
+              <img src="assets/img/concrete_wall_2.jpg" class="w-full h-full object-cover" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROČ VIZUALIO -->
+      <section id="proc-vizualio" class="py-20 md:py-24 px-4 bg-carbon">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-10 fade-up">
+            <div class="border-t border-champagne/30 w-16 mx-auto mb-4"></div>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-3 text-offwhite">
+              Proč se vyplatí vizualizovat s Vizualio
+            </h2>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-carbon/80 border border-white/5 rounded-2xl p-6 shadow-md fade-up overflow-hidden relative">
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <h3 class="font-semibold mb-2 text-lg text-offwhite">Precizní rozměry a detaily</h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Nepracujeme s generickými AI obrázky. Každý prostor
+                modelujeme v přesných rozměrech podle skutečných dat, takže se
+                na výsledek můžete spolehnout při plánování nábytku i stavebních
+                úprav.
+              </p>
+            </div>
+            <div class="bg-carbon/80 border border-white/5 rounded-2xl p-6 shadow-md fade-up overflow-hidden relative">
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <h3 class="font-semibold mb-2 text-lg text-offwhite">Realita ještě před realizací</h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Světlo, materiály, atmosféra – vše nastavujeme tak, aby obraz působil
+                co nejblíž realitě, ne jako katalogová ilustrační fotka. Klient
+                lépe chápe, co kupuje.
+              </p>
+            </div>
+            <div class="bg-carbon/80 border border-white/5 rounded-2xl p-6 shadow-md fade-up overflow-hidden relative">
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <h3 class="font-semibold mb-2 text-lg text-offwhite">Podpora vašeho byznysu</h3>
+              <p class="text-sm text-stone leading-relaxed">
+                Kvalitní vizualizace pomáhá rychleji prodávat, schvalovat návrhy
+                bez zbytečných iterací a zvyšuje důvěru ve váš projekt. Šetří
+                čas i peníze.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CENÍK -->
+      <section id="cenik" class="py-20 md:py-24 px-4 bg-carbon">
+        <div class="max-w-6xl mx-auto">
+          <div class="text-center mb-10 fade-up">
+            <div class="border-t border-champagne/30 w-16 mx-auto mb-4"></div>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-3 text-offwhite">
+              Orientační ceník
+            </h2>
+            <p class="text-stone max-w-2xl mx-auto leading-relaxed">
+              Přesnou cenu vám vždy dopočítáme podle konkrétního zadání a rozsahu.
+              Tyto částky slouží jako základní orientace.
+            </p>
+          </div>
+
+          <div class="grid md:grid-cols-4 gap-6">
+            <div
+              class="border border-champagne/40 rounded-2xl p-5 bg-carbon/90 shadow-xl fade-up overflow-hidden relative"
+            >
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <h3 class="font-semibold mb-2 text-sm uppercase tracking-[0.15em] text-offwhite">
+                Bytová scéna / místnost
+              </h3>
+              <p class="text-xl font-semibold mb-2 text-offwhite">od 2 500 Kč</p>
+              <p class="text-sm text-stone leading-relaxed">
+                Jedna vizualizace konkrétní místnosti – ideální pro prezentaci
+                klíčového prostoru.
+              </p>
+            </div>
+
+            <div
+              class="border border-champagne/40 rounded-2xl p-5 bg-carbon/90 shadow-xl fade-up overflow-hidden relative"
+            >
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <h3 class="font-semibold mb-2 text-sm uppercase tracking-[0.15em] text-offwhite">
+                Byt do 50 m²
+              </h3>
+              <p class="text-xl font-semibold mb-2 text-offwhite">od 3 900 Kč</p>
+              <p class="text-sm text-stone leading-relaxed">
+                Více záběrů jednoho bytu, vhodné pro prodej i pronájem
+                nemovitosti.
+              </p>
+            </div>
+
+            <div
+              class="border border-champagne/40 rounded-2xl p-5 bg-carbon/90 shadow-xl fade-up overflow-hidden relative"
+            >
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <h3 class="font-semibold mb-2 text-sm uppercase tracking-[0.15em] text-offwhite">
+                Kuchyně na míru
+              </h3>
+              <p class="text-xl font-semibold mb-2 text-offwhite">od 2 900 Kč</p>
+              <p class="text-sm text-stone leading-relaxed">
+                Vizualizace kuchyně nebo nábytkové sestavy v přesných rozměrech,
+                ideální pro truhláře a studia.
+              </p>
+            </div>
+
+            <div
+              class="border border-champagne/40 rounded-2xl p-5 bg-carbon/90 shadow-xl fade-up overflow-hidden relative"
+            >
+              <!-- Accent corner -->
+              <div class="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-champagne/50 rounded-tl-2xl"></div>
+              <h3 class="font-semibold mb-2 text-sm uppercase tracking-[0.15em] text-offwhite">
+                Developerské projekty
+              </h3>
+              <p class="text-xl font-semibold mb-2 text-offwhite">Cena na míru</p>
+              <p class="text-sm text-stone leading-relaxed">
+                Individuální kalkulace podle počtu bytů, scén a rozsahu
+                prezentace.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ZÁVĚREČNÝ KONTAKT -->
+      <section
+        id="kontakt-bottom"
+        class="py-20 md:py-24 px-4 bg-[url('assets/img/villa_2.jpg')] bg-cover bg-center relative"
+      >
+        <div class="absolute inset-0 bg-carbon/85"></div>
+        <div class="relative max-w-4xl mx-auto text-center fade-up">
+          <div class="border-t border-champagne/30 w-16 mx-auto mb-4"></div>
+          <h2 class="text-2xl md:text-3xl font-semibold mb-4 text-offwhite">
+            Připravíme vizualizaci i pro váš projekt
+          </h2>
+          <p class="text-stone mb-6 leading-relaxed">
+            Ať řešíte jedinou místnost nebo celý bytový dům, podíváme se na vaše
+            podklady a navrhneme ideální formu vizualizace.
+          </p>
+          <a
+            href="#kontakt"
+            class="inline-flex px-6 py-3 rounded-full bg-champagne text-carbon font-semibold text-sm hover:bg-champagne/90 transition"
+          >
+            Chci nezávaznou poptávku
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-carbon/70 bg-carbon py-6 px-4">
+      <div
+        class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-stone"
+      >
+        <div class="uppercase tracking-[0.25em] text-[11px]">
+          Vizualio
+        </div>
+        <div class="flex flex-col md:flex-row gap-2 md:gap-6 text-center md:text-right">
+          <span>© Vizualio – 3D vizualizace interiérů, exteriérů a nábytku na míru.</span>
+          <span>E-mail: <a href="mailto:info@vizualio.cz" class="hover:text-offwhite">info@vizualio.cz</a></span>
+          <span>Instagram: <span class="hover:text-offwhite">@vizualio</span></span>
+        </div>
+      </div>
+    </footer>
+
+
+    <!-- GSAP + ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Video scroll scrub - completely rewritten for reliability
+  // Works on both file:// and HTTP server
+  (function() {
+    const video = document.getElementById("heroVideo");
+    if (!video) {
+      console.error("Video element not found!");
+      return;
+    }
+
+    // Ensure video doesn't autoplay from the start
+    video.pause();
+    video.currentTime = 0;
+    video.autoplay = false;
+    
+    // Load video as blob to ensure seeking works on HTTP servers
+    // This forces the browser to download the entire video, making seeking work
+    console.log("Loading video as blob for better seeking support...");
+    
+    fetch('assets/video/hero.mp4')
+      .then(response => {
+        if (!response.ok) throw new Error('Video fetch failed');
+        return response.blob();
+      })
+      .then(blob => {
+        const videoUrl = URL.createObjectURL(blob);
+        
+        // Ensure video is paused before setting src
+        video.pause();
+        video.currentTime = 0;
+        
+        video.src = videoUrl;
+        
+        // Force video to stay paused and at start during all loading events
+        const keepAtStart = function() {
+          video.pause();
+          video.currentTime = 0;
+        };
+        
+        video.addEventListener('loadedmetadata', keepAtStart, { once: true });
+        video.addEventListener('loadeddata', keepAtStart, { once: true });
+        video.addEventListener('canplay', keepAtStart, { once: true });
+        
+        // Also periodically check to prevent any jumping
+        const checkInterval = setInterval(function() {
+          if (video.currentTime > 0.1) {
+            video.pause();
+            video.currentTime = 0;
+          }
+          // Clear interval after video is fully loaded
+          if (video.readyState >= 4) {
+            clearInterval(checkInterval);
+          }
+        }, 100);
+        
+        // Clear interval after 5 seconds max
+        setTimeout(function() {
+          clearInterval(checkInterval);
+        }, 5000);
+        
+        console.log("Video loaded as blob! Setting up video listeners...");
+        setupVideoAfterLoad();
+      })
+      .catch(error => {
+        console.error("Failed to load video as blob:", error);
+        // Fallback to normal src
+        video.src = 'assets/video/hero.mp4';
+        video.pause();
+        video.currentTime = 0;
+        setupVideoAfterLoad();
+      });
+    
+    let scrollTrigger = null;
+    let videoDuration = 0;
+    let initialized = false;
+
+    // Clean, simple function to create ScrollTrigger
+    function createScrollTriggerNow() {
+      // Kill existing trigger if any
+      if (scrollTrigger) {
+        scrollTrigger.kill();
+        scrollTrigger = null;
+      }
+
+      videoDuration = video.duration;
+      
+      if (!videoDuration || !isFinite(videoDuration) || videoDuration <= 0) {
+        console.error("Invalid video duration:", videoDuration);
+        return;
+      }
+
+      console.log("Creating ScrollTrigger with duration:", videoDuration);
+
+      // Ensure video is paused at start - no jumping!
+      video.pause();
+      video.currentTime = 0;
+
+      // Kill any existing ScrollTrigger by ID (safety check)
+      const existing = ScrollTrigger.getById("heroScroll");
+      if (existing) {
+        existing.kill();
+        console.log("Killed existing ScrollTrigger");
+      }
+
+      // Create ScrollTrigger - simple and direct
+      scrollTrigger = ScrollTrigger.create({
+        id: "heroScroll",
+        trigger: "#hero",
+        start: "top top",
+        end: "+=1400",
+        scrub: 0.35,
+        pin: true,
+        anticipatePin: 1,
+        pinSpacing: true,
+        markers: false, // Set to true to see pin markers
+        onUpdate: function(self) {
+          const progress = Math.min(Math.max(self.progress, 0), 1); // Clamp between 0 and 1
+          const targetTime = progress * videoDuration;
+          
+          // Ensure video is paused
+          if (!video.paused) {
+            video.pause();
+          }
+          
+          // Direct seeking - clamp to valid range
+          if (targetTime >= 0 && targetTime <= videoDuration) {
+            video.currentTime = targetTime;
+          }
+        },
+        onEnter: function() {
+          video.currentTime = 0;
+          video.pause();
+        },
+        onLeaveBack: function() {
+          video.currentTime = 0;
+          video.pause();
+        },
+        onLeave: function() {
+          // When leaving the pinned section, ensure video is at the end and paused
+          if (video.currentTime < videoDuration - 0.1) {
+            video.currentTime = videoDuration;
+          }
+          video.pause();
+        },
+        onEnterBack: function() {
+          // When scrolling back up, ensure video is paused
+          video.pause();
+        }
+      });
+
+      // Refresh after creation to ensure everything is calculated correctly
+      ScrollTrigger.refresh();
+      console.log("ScrollTrigger created successfully! Progress:", scrollTrigger.progress);
+    }
+
+    // Wait for video to be ready - multiple strategies
+    function initVideoScroll() {
+      // IMPORTANT: Check and set initialized flag FIRST to prevent multiple calls
+      if (initialized) {
+        console.log("Already initialized, skipping");
+        return;
+      }
+
+      // Check if video has valid duration
+      if (!video.duration || !isFinite(video.duration) || video.duration <= 0) {
+        console.log("Video not ready yet, duration:", video.duration, "readyState:", video.readyState);
+        return;
+      }
+
+      // Mark as initialized IMMEDIATELY to prevent duplicate calls
+      initialized = true;
+      videoDuration = video.duration; // Set duration NOW
+      console.log("Video ready! Duration:", videoDuration, "ReadyState:", video.readyState);
+      
+      // DON'T call video.load() - it resets the video and can cause jumping
+      // Video is already loaded as blob, so it's ready
+      
+      // Ensure video is paused and at start
+      video.pause();
+      video.currentTime = 0;
+      
+      // Wait a bit for video to be fully ready, then create ScrollTrigger
+      console.log("Video ready! Creating ScrollTrigger...");
+      
+      // Give video a moment to initialize, then create ScrollTrigger
+      setTimeout(function() {
+        // One more check to ensure video is at start
+        video.pause();
+        video.currentTime = 0;
+        createScrollTriggerNow();
+      }, 300);
+    }
+
+    // Setup video event listeners (called after video blob is loaded)
+    function setupVideoListeners() {
+      console.log("Setting up video listeners...");
+
+      // Multiple events to catch different loading states
+      video.addEventListener("loadedmetadata", function() {
+        console.log("✓ Metadata loaded, duration:", video.duration);
+        setTimeout(initVideoScroll, 500);
+      }, { once: true });
+
+      video.addEventListener("loadeddata", function() {
+        console.log("✓ Data loaded, readyState:", video.readyState);
+        if (!initialized && video.duration > 0) {
+          setTimeout(initVideoScroll, 500);
+        }
+      }, { once: true });
+
+      video.addEventListener("canplay", function() {
+        console.log("✓ Can play, readyState:", video.readyState);
+        if (!initialized && video.duration > 0) {
+          setTimeout(initVideoScroll, 500);
+        }
+      }, { once: true });
+
+      video.addEventListener("canplaythrough", function() {
+        console.log("✓ Can play through, readyState:", video.readyState);
+        if (!initialized && video.duration > 0) {
+          setTimeout(initVideoScroll, 300);
+        }
+      }, { once: true });
+      
+      // Listen for progress - video is loading data
+      let progressChecks = 0;
+      video.addEventListener("progress", function() {
+        progressChecks++;
+        if (progressChecks >= 3 && !initialized && video.duration > 0) {
+          console.log("✓ Video progress made, readyState:", video.readyState);
+          if (video.seekable && video.seekable.length > 0) {
+            console.log("✓ Video has seekable range:", video.seekable.end(0));
+          }
+          setTimeout(initVideoScroll, 400);
+        }
+      });
+
+      // Also check periodically if video becomes ready (with initialized check)
+      let checkCount = 0;
+      const checkInterval = setInterval(function() {
+        checkCount++;
+        if (checkCount > 20 || initialized) {
+          clearInterval(checkInterval);
+          return;
+        }
+        
+        if (video.duration > 0 && video.readyState >= 2) {
+          console.log("Video ready via interval check, readyState:", video.readyState);
+          clearInterval(checkInterval);
+          setTimeout(initVideoScroll, 500);
+        }
+      }, 200);
+    }
+
+    // setupVideoAfterLoad is called after video blob loads
+    function setupVideoAfterLoad() {
+      console.log("Video blob loaded, setting up listeners...");
+      setupVideoListeners();
+    }
+  })();
+
+  // Fade-up animace pro prvky s class="fade-up"
+  // Inicializace až po načtení stránky
+  window.addEventListener("load", function() {
+    document.querySelectorAll(".fade-up").forEach((el) => {
+      gsap.from(el, {
+        y: 40,
+        opacity: 0,
+        duration: 0.9,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      });
+    });
+    
+    ScrollTrigger.refresh();
+  });
+
+  // Header scroll behavior - compact on scroll + active navigation state
+  (function() {
+    const header = document.getElementById("mainHeader");
+    const headerPanel = header?.querySelector("div");
+    const navLinks = document.querySelectorAll(".nav-link");
+    
+    if (!header || !headerPanel) return;
+
+    function updateActiveNav() {
+      const sections = [
+        { id: 'sluzby', element: document.getElementById('sluzby'), includes: ['cenik'] },
+        { id: 'portfolio', element: document.getElementById('portfolio') },
+        { id: 'proc-vizualio', element: document.getElementById('proc-vizualio') }
+      ];
+
+      const scrollPosition = window.scrollY + 200; // Offset for better UX
+
+      // Remove active class from all links
+      navLinks.forEach(link => {
+        link.classList.remove('text-offwhite');
+        link.classList.add('text-stone');
+      });
+
+      // Find which section is currently in view
+      let currentSection = null;
+      
+      // Check from bottom to top to get the last visible section
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section.element) {
+          const sectionTop = section.element.offsetTop;
+          const sectionBottom = sectionTop + section.element.offsetHeight;
+          
+          // Also check if scroll is in ceník section (if sluzby section includes it)
+          if (section.includes && section.includes.includes('cenik')) {
+            const cenikSection = document.getElementById('cenik');
+            if (cenikSection) {
+              const cenikTop = cenikSection.offsetTop;
+              const cenikBottom = cenikTop + cenikSection.offsetHeight;
+              if (scrollPosition >= cenikTop && scrollPosition <= cenikBottom) {
+                currentSection = section.id;
+                break;
+              }
+            }
+          }
+          
+          if (scrollPosition >= sectionTop && scrollPosition <= sectionBottom) {
+            currentSection = section.id;
+            break;
+          }
+        }
+      }
+
+      // Add active class to current section link
+      if (currentSection) {
+        navLinks.forEach(link => {
+          if (link.getAttribute('data-section') === currentSection) {
+            link.classList.remove('text-stone');
+            link.classList.add('text-offwhite');
+          }
+        });
+      }
+    }
+
+    // Throttle scroll events for better performance
+    let ticking = false;
+    
+    function handleScroll() {
+      const scrollY = window.scrollY;
+      
+      // Update header compact state
+      if (scrollY > 100) {
+        header.classList.add("header-scrolled");
+        headerPanel.classList.add("py-1.5", "shadow-xl");
+        headerPanel.classList.remove("py-2", "py-2.5", "shadow-lg");
+      } else {
+        header.classList.remove("header-scrolled");
+        headerPanel.classList.remove("py-1.5", "shadow-xl");
+        headerPanel.classList.add("py-2", "shadow-lg");
+        if (window.innerWidth >= 768) {
+          headerPanel.classList.add("py-2.5");
+        }
+      }
+
+      // Update active navigation state
+      updateActiveNav();
+      
+      ticking = false;
+    }
+    
+    window.addEventListener("scroll", function() {
+      if (!ticking) {
+        window.requestAnimationFrame(handleScroll);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Update on page load
+    updateActiveNav();
+  })();
+
+  // Mobile menu toggle
+  (function() {
+    const hamburgerBtn = document.getElementById("mobile-menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const hamburgerIcon = document.getElementById("hamburger-icon");
+    const closeIcon = document.getElementById("close-icon");
+    
+    if (!hamburgerBtn || !mobileMenu) return;
+
+    let isOpen = false;
+
+    hamburgerBtn.addEventListener("click", function() {
+      isOpen = !isOpen;
+      
+      if (isOpen) {
+        // Show menu
+        hamburgerIcon.classList.add("hidden");
+        closeIcon.classList.remove("hidden");
+        mobileMenu.classList.remove("hidden");
+        
+        // Animate menu slide down
+        gsap.fromTo(mobileMenu, 
+          { opacity: 0, height: 0 },
+          { opacity: 1, height: "auto", duration: 0.3, ease: "power2.out" }
+        );
+      } else {
+        // Hide menu
+        hamburgerIcon.classList.remove("hidden");
+        closeIcon.classList.add("hidden");
+        
+        // Animate menu slide up
+        gsap.to(mobileMenu, {
+          opacity: 0,
+          height: 0,
+          duration: 0.3,
+          ease: "power2.in",
+          onComplete: function() {
+            mobileMenu.classList.add("hidden");
+          }
+        });
+      }
+    });
+
+    // Close menu when clicking nav links
+    const mobileNavLinks = mobileMenu.querySelectorAll("a");
+    mobileNavLinks.forEach(link => {
+      link.addEventListener("click", function() {
+        if (isOpen) {
+          hamburgerBtn.click();
+        }
+      });
+    });
+  })();
+</script>
+
+  </body>
+</html>
