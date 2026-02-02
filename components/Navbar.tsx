@@ -4,6 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { LogOut } from "lucide-react";
 
 const navLinks = [
   { href: "#proc", label: "Proč my" },
@@ -15,20 +17,35 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin") ?? false;
+  const isAccount = pathname?.startsWith("/account") ?? false;
+  const isAuth = pathname === "/login" || pathname === "/admin/login";
+  const isPortal = isAdmin || isAccount || isAuth;
 
-  if (isAdmin) {
+  if (isPortal) {
     return (
       <header className="sticky top-0 z-30 border-b border-white/10 bg-carbon/70 backdrop-blur-lg w-full">
         <div className="flex w-full items-center justify-between px-6 h-20">
           <Link href="/" className="flex items-center gap-3">
             <Image src="/img/logo.svg" alt="Vizualio" width={48} height={48} className="h-28 w-28" />
           </Link>
-          <Link
-            href="/"
-            className="rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-offwhite transition hover:border-champagne hover:text-champagne"
-          >
-            Zpět na web
-          </Link>
+          <div className="flex items-center gap-2">
+            {isAccount && (
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-offwhite transition hover:border-champagne/60 hover:text-champagne inline-flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Odhlásit se
+              </button>
+            )}
+            <Link
+              href="/"
+              className="rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-offwhite transition hover:border-champagne hover:text-champagne"
+            >
+              Zpět na web
+            </Link>
+          </div>
         </div>
       </header>
     );

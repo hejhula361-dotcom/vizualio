@@ -28,8 +28,11 @@ export default function Footer() {
   const pathname = usePathname();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const isAdmin = pathname?.startsWith("/admin") ?? false;
+  const isAccount = pathname?.startsWith("/account") ?? false;
+  const isAuth = pathname === "/login" || pathname === "/admin/login";
+  const isPortal = isAdmin || isAccount || isAuth;
 
-  if (isAdmin) {
+  if (isPortal) {
     return (
       <footer className="border-t border-white/10 bg-charcoal/70 backdrop-blur-lg">
         <div className="mx-auto max-w-6xl px-6 py-10">
