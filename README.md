@@ -1,117 +1,88 @@
 # Vizualio
 
-Luxusní dark-mode webová aplikace pro 3D vizualizace interiérů, exteriérů a nábytku.
+Next.js 14 web + administrace + klientský portál, data v Supabase (Postgres + Storage).
 
-## Tech Stack
+## Tech stack
 
-- **Next.js 14** (App Router)
-- **TypeScript**
-- **Tailwind CSS**
-- **Framer Motion**
-- **Lucide React**
+- Next.js 14 (App Router) + TypeScript
+- Tailwind CSS + Framer Motion + Lucide
+- Supabase (Postgres + Storage)
+- NextAuth (admin přes GitHub allowlist, klient přes username+heslo)
+- TipTap (admin editor blogu)
 
 ## Lokální vývoj
 
+1) Instalace:
+
 ```bash
-# Instalace závislostí
 npm install
-
-# Spuštění dev serveru
-npm run dev
-
-# Build pro produkci
-npm run build
-
-# Spuštění produkční verze
-npm start
 ```
 
-Aplikace běží na [http://localhost:3000](http://localhost:3000)
+2) Env:
 
-## Deploy na Vercel
+- Zkopíruj `.env.example` → `.env.local` a doplň skutečné hodnoty.
 
-### 1. Push na GitHub
+3) Supabase:
+
+- Spusť migraci `db/migrations/001_init.sql` v Supabase SQL editoru.
+- Vytvoř Storage buckety:
+  - `portfolio-images` (public) – marketingové portfolio
+  - `projects` (private) – doručení fotek klientům (signed URL)
+  - `blog` (public) – obrázky do článků
+
+4) Spuštění:
 
 ```bash
-# Inicializace git (pokud ještě není)
-git init
-
-# Přidání všech souborů
-git add .
-
-# Commit
-git commit -m "Initial commit"
-
-# Přidání remote repository (nahraďte URL vaším GitHub repo)
-git remote add origin https://github.com/VASE_USERNAME/vizualio-web.git
-
-# Push na GitHub
-git push -u origin main
+npm run dev
 ```
 
-### 2. Propojení s Vercel
+Aplikace běží na `http://localhost:3000`.
 
-1. Jděte na [vercel.com](https://vercel.com) a přihlaste se
-2. Klikněte na **"Add New Project"**
-3. Vyberte vaše GitHub repository
-4. Vercel automaticky detekuje Next.js projekt
-5. Klikněte na **"Deploy"**
+## Environment variables
 
-Vercel automaticky:
-- Detekuje Next.js framework
-- Nastaví build command: `npm run build`
-- Nastaví output directory: `.next`
-- Nastaví install command: `npm install`
+### Supabase
 
-### 3. Environment Variables (pokud by byly potřeba)
+- `NEXT_PUBLIC_SUPABASE_URL` – Supabase URL (pro klienta i server)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` – public anon key (používá se např. pro URL obrázků)
+- `SUPABASE_SERVICE_ROLE_KEY` – **server-only** (DB + privátní Storage operace)
 
-Pokud budete potřebovat environment variables:
-1. V projektu na Vercel jděte do **Settings** → **Environment Variables**
-2. Přidejte potřebné proměnné
+### NextAuth
 
-### 4. Custom Domain (volitelné)
+- `NEXTAUTH_URL` – např. `http://localhost:3000` (na Vercelu URL projektu)
+- `NEXTAUTH_SECRET` – náhodný secret pro JWT/cookies
 
-1. V projektu na Vercel jděte do **Settings** → **Domains**
-2. Přidejte svou doménu a následujte instrukce
+### Admin login (GitHub)
 
-## Struktura projektu
+- `GITHUB_ID`
+- `GITHUB_SECRET`
+- `ADMIN_EMAIL_ALLOWLIST` – comma-separated seznam e-mailů, které se mohou přihlásit do `/admin`
 
-```
-vizualio-web/
-├── app/
-│   ├── admin/          # Admin dashboard
-│   ├── context/        # React Context (LeadContext)
-│   ├── layout.tsx      # Root layout
-│   ├── page.tsx        # Landing page
-│   └── providers.tsx   # Context providers
-├── components/
-│   ├── Navbar.tsx      # Navigace
-│   ├── Footer.tsx      # Footer
-│   └── ContactForm.tsx # Kontaktní formulář
-├── public/
-│   └── img/            # Obrázky (logo, hero, portfolio)
-└── ...
-```
+## Přístupy
 
-## Funkce
+### Admin
 
-- ✅ Luxusní dark-mode design
-- ✅ Responzivní layout
-- ✅ Framer Motion animace
-- ✅ Kontaktní formulář s multi-step flow
-- ✅ Admin dashboard s přihlášením
-- ✅ Správa poptávek (localStorage)
-- ✅ Portfolio galerie
-- ✅ FAQ sekce ve footeru
+- Login: `/admin/login` (GitHub OAuth)
+- Poptávky: `/admin/inquiries`
+- Klienti/projekty: `/admin/clients`, `/admin/projects/[projectId]`
+- Uživatelé (role): `/admin/users` (jen `superadmin`)
+- Hodnocení: `/admin/ratings` (jen `superadmin`)
+- Blog: `/admin/blog`
 
-## Admin přístup
+### Klient
 
-- URL: `/admin`
-- Username: `admin`
-- Password: `vizualio2025`
+- Login: `/login` (username + dočasné heslo)
+- Projekty: `/account`
+- Detail projektu: `/account/projects/[projectId]`
 
-## Poznámky
+## Poznámky k bezpečnosti
 
-- Data poptávek se ukládají do localStorage (pro produkci doporučujeme backend)
-- Admin přihlášení je mock implementace (pro produkci doporučujeme proper auth)
+- `SUPABASE_SERVICE_ROLE_KEY` nikdy nedávat do klienta / veřejných env.
+- Všechny citlivé operace (CRUD, uploady, signed URL) běží server-side.
+- `projects` bucket je privátní – pro zobrazení/stažení se generují signed URL.
+
+## Deploy (Vercel)
+
+1) Přidej env proměnné do Vercelu (Project → Settings → Environment Variables).
+2) Nasazení probíhá standardně přes `npm run build`.
+3) Nezapomeň, že Supabase migrace + buckety se nastavují v Supabase (mimo Vercel).
 
