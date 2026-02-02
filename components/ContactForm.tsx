@@ -2,12 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
-import { useLeads } from "@/app/context/LeadContext";
+import { submitInquiry } from "@/app/actions/inquiries";
 
 type Step = 1 | 2 | 3;
 
 export default function ContactForm() {
-  const { addLead } = useLeads();
   const [step, setStep] = useState<Step>(1);
   const [idea, setIdea] = useState("");
   const [name, setName] = useState("");
@@ -16,6 +15,7 @@ export default function ContactForm() {
   const [projectType, setProjectType] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const nextStep = () => setStep((prev) => (Math.min(prev + 1, 3) as Step));
 
@@ -25,13 +25,19 @@ export default function ContactForm() {
     nextStep();
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
     if (!name.trim() || !email.trim()) return;
     setSubmitting(true);
-    addLead({ idea, name, email, phone, projectType, message });
-    setSubmitting(false);
-    setStep(3);
+    try {
+      await submitInquiry({ idea, name, email, phone, projectType, message });
+      setStep(3);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Nepodařilo se odeslat poptávku.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -131,6 +137,11 @@ export default function ContactForm() {
               placeholder="Počet úhlů, termín, rozpočet…"
             />
           </div>
+          {submitError && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+              {submitError}
+            </div>
+          )}
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <button
               type="button"
@@ -171,6 +182,7 @@ export default function ContactForm() {
               setPhone("");
               setProjectType("");
               setMessage("");
+              setSubmitError(null);
               setStep(1);
             }}
             className="text-champagne underline-offset-4 hover:underline"
