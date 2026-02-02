@@ -1,31 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { getPortfolioImageUrl } from "@/lib/supabase";
 
 type PortfolioImageProps = {
-  /** Název souboru v bucketu (portfolio-images) */
   src: string;
   alt: string;
-  /** První obrázky v mřížce – načtou se hned (priority) */
   priority?: boolean;
-  /** Pro mřížku: menší rozměr = rychlejší načtení (Supabase Pro – Image Transformations) */
   thumbnailWidth?: number;
   fill?: boolean;
   width?: number;
   height?: number;
   sizes?: string;
   className?: string;
-  /** Pro lightbox / velký obrázek – bez thumbnail */
   fullSize?: boolean;
 };
 
+/** rootMargin pro Intersection Observer – načíst obrázek už před vstupem do viewportu */
+const LAZY_ROOT_MARGIN = "400px 0px";
+
 /**
- * Obrázek z portfolia s lazy loadingem a skeleton placeholderm.
- * – priority = načíst hned (první řádky)
- * – bez priority = loading="lazy", fetchPriority="low"
- * – skeleton zmizí po onLoad
+ * Obrázek z portfolia:
+ * – Místo černého placeholdera: jemný tmavý gradient, pak blur-up (obrázek nejdřív rozmazaný, pak ostrý).
+ * – Bez priority: načte se až když je blízko viewportu (Intersection Observer).
  */
 export function PortfolioImage({
   src,
@@ -39,33 +37,68 @@ export function PortfolioImage({
   className,
   fullSize = false
 }: PortfolioImageProps) {
+  const [inView, setInView] = useState(priority);
   const [loaded, setLoaded] = useState(false);
+  const [sharpened, setSharpened] = useState(false);
+  const containerRef = useRef<HTMLSpanElement>(null);
+
   const url = fullSize
     ? getPortfolioImageUrl(src)
     : getPortfolioImageUrl(src, thumbnailWidth ? { width: thumbnailWidth, quality: 75 } : undefined);
 
+  useEffect(() => {
+    if (priority) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setInView(true);
+        });
+      },
+      { rootMargin: LAZY_ROOT_MARGIN, threshold: 0.01 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [priority]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    const t = setTimeout(() => setSharpened(true), 50);
+    return () => clearTimeout(t);
+  }, [loaded]);
+
   return (
-    <span className="relative block h-full w-full">
-      {/* Skeleton – zmizí po načtení obrázku */}
-      {!loaded && (
+    <span ref={containerRef} className="relative block h-full w-full overflow-hidden rounded-2xl">
+      {/* Placeholder: jemný gradient místo černé */}
+      {(!inView || !loaded) && (
         <span
-          className="absolute inset-0 z-0 bg-charcoal/80 animate-pulse rounded-2xl"
+          className="absolute inset-0 z-0 rounded-2xl bg-gradient-to-br from-stone-800/95 to-carbon/95"
           aria-hidden
         />
       )}
-      <Image
-        src={url}
-        alt={alt}
-        fill={fill}
-        width={!fill ? width : undefined}
-        height={!fill ? height : undefined}
-        sizes={sizes}
-        className={`transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} ${className ?? ""}`}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "low"}
-        decoding="async"
-        onLoad={() => setLoaded(true)}
-      />
+
+      {inView && (
+        <Image
+          src={url}
+          alt={alt}
+          fill={fill}
+          width={!fill ? width : undefined}
+          height={!fill ? height : undefined}
+          sizes={sizes}
+          className={`relative z-10 object-cover transition-all duration-500 ease-out ${className ?? ""} ${
+            !loaded
+              ? "opacity-0 blur-xl scale-105"
+              : sharpened
+                ? "opacity-100 blur-0 scale-100"
+                : "opacity-100 blur-xl scale-105"
+          }`}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "low"}
+          decoding="async"
+          onLoad={() => setLoaded(true)}
+        />
+      )}
     </span>
   );
 }
