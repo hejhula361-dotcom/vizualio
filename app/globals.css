@@ -133,5 +133,63 @@ a {
   @apply rounded-2xl border border-white/10 bg-charcoal/60 p-6 backdrop-blur-sm;
 }
 
+/* Rich text editor (TipTap) */
+.rich-editor {
+  @apply rounded-2xl border border-white/10 bg-obsidian/40 p-4;
+}
+.rich-editor .ProseMirror {
+  @apply min-h-[240px] outline-none text-offwhite/90 leading-relaxed;
+}
+.rich-editor .ProseMirror p {
+  @apply mt-3;
+}
+.rich-editor .ProseMirror h2 {
+  @apply mt-6 text-2xl font-semibold text-offwhite;
+}
+.rich-editor .ProseMirror h3 {
+  @apply mt-5 text-xl font-semibold text-offwhite;
+}
+.rich-editor .ProseMirror ul {
+  @apply mt-3 list-disc pl-6;
+}
+.rich-editor .ProseMirror ol {
+  @apply mt-3 list-decimal pl-6;
+}
+.rich-editor .ProseMirror a {
+  @apply text-champagne underline underline-offset-4;
+}
+.rich-editor .ProseMirror img {
+  @apply mt-4 rounded-2xl border border-white/10;
+}
+
+/* Blog article rendering */
+.blog-content {
+  @apply text-offwhite/90 leading-relaxed;
+}
+.blog-content p {
+  @apply mt-4;
+}
+.blog-content h2 {
+  @apply mt-10 text-2xl font-semibold text-offwhite;
+}
+.blog-content h3 {
+  @apply mt-8 text-xl font-semibold text-offwhite;
+}
+.blog-content ul {
+  @apply mt-4 list-disc pl-6;
+}
+.blog-content ol {
+  @apply mt-4 list-decimal pl-6;
+}
+.blog-content a {
+  @apply text-champagne underline underline-offset-4;
+}
+.blog-content a:hover {
+  @apply text-amber;
+}
+.blog-content img {
+  @apply mt-6 rounded-2xl border border-white/10;
+}
+
 
 

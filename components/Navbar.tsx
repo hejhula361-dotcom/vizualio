@@ -10,6 +10,7 @@ import { LogOut } from "lucide-react";
 const navLinks = [
   { href: "#proc", label: "Proč my" },
   { href: "/portfolio", label: "Portfolio" },
+  { href: "/blog", label: "Blog" },
   { href: "/cenik", label: "Ceník" },
   { href: "#kontakt", label: "Kontakt" }
 ];

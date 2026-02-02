@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Inbox, LayoutDashboard, LogOut, Shield, Star, Users, type LucideIcon } from "lucide-react";
+import { FileText, Inbox, LayoutDashboard, LogOut, Shield, Star, Users, type LucideIcon } from "lucide-react";
 
 type UserRole = "superadmin" | "admin" | "editor";
 
@@ -19,13 +19,19 @@ const navItems: NavItem[] = [
   { href: "/admin/inquiries", label: "Poptávky", icon: Inbox },
   { href: "/admin/clients", label: "Klienti", icon: Users, minRole: "admin" },
   { href: "/admin/ratings", label: "Hodnocení", icon: Star, minRole: "superadmin" },
+  { href: "/admin/blog", label: "Blog", icon: FileText, minRole: "editor" },
   { href: "/admin/users", label: "Uživatelé", icon: Shield, minRole: "superadmin" }
 ];
 
+const roleRank: Record<UserRole, number> = {
+  editor: 1,
+  admin: 2,
+  superadmin: 3
+};
+
 function hasAccess(role: UserRole, minRole?: UserRole) {
   if (!minRole) return true;
-  if (role === "superadmin") return true;
-  return role === minRole;
+  return roleRank[role] >= roleRank[minRole];
 }
 
 export function AdminNav({ role }: { role: UserRole }) {
