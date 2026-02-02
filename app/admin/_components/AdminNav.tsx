@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { Inbox, LayoutDashboard, LogOut, Shield, type LucideIcon } from "lucide-react";
+import { Inbox, LayoutDashboard, LogOut, Shield, Users, type LucideIcon } from "lucide-react";
 
 type UserRole = "superadmin" | "admin" | "editor";
 
@@ -17,6 +17,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { href: "/admin", label: "Přehled", icon: LayoutDashboard },
   { href: "/admin/inquiries", label: "Poptávky", icon: Inbox },
+  { href: "/admin/clients", label: "Klienti", icon: Users, minRole: "admin" },
   { href: "/admin/users", label: "Uživatelé", icon: Shield, minRole: "superadmin" }
 ];
 

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { authOptions, type UserRole } from "@/lib/auth";
 
@@ -14,7 +14,7 @@ export async function requireAdmin(allowedRoles?: UserRole[]) {
   if (!session || (session as any).userType !== "admin") redirect("/admin/login");
 
   const role = (session.user as any).role as UserRole | undefined;
-  if (allowedRoles && (!role || !allowedRoles.includes(role))) redirect("/admin");
+  if (allowedRoles && (!role || !allowedRoles.includes(role))) notFound();
 
   return session;
 }
