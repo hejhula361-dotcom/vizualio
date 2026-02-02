@@ -19,7 +19,7 @@ export function AdminLoginClient({ from }: { from: string }) {
           whileTap={{ scale: 0.98 }}
           type="button"
           onClick={() => signIn("github", { callbackUrl: from })}
-          className="w-full rounded-full bg-champagne px-5 py-3 text-sm font-semibold text-carbon shadow-glow transition hover:bg-amber"
+          className="btn-primary w-full"
         >
           Přihlásit se přes GitHub
         </motion.button>

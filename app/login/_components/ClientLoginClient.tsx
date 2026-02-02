@@ -51,7 +51,7 @@ export function ClientLoginClient({ from }: { from: string }) {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-obsidian/60 px-4 py-3 text-sm text-offwhite placeholder:text-stone focus:border-champagne/60 focus:outline-none"
+              className="input-field"
               placeholder="např. klient-123"
               required
               autoComplete="username"
@@ -63,7 +63,7 @@ export function ClientLoginClient({ from }: { from: string }) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-obsidian/60 px-4 py-3 text-sm text-offwhite placeholder:text-stone focus:border-champagne/60 focus:outline-none"
+              className="input-field"
               placeholder="••••••••"
               required
               autoComplete="current-password"
@@ -81,7 +81,7 @@ export function ClientLoginClient({ from }: { from: string }) {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={submitting}
-            className="w-full rounded-full bg-champagne px-5 py-3 text-sm font-semibold text-carbon shadow-glow transition hover:bg-amber disabled:opacity-70"
+            className="btn-primary w-full"
           >
             {submitting ? "Přihlašuji…" : "Přihlásit se"}
           </motion.button>

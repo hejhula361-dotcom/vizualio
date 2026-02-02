@@ -43,6 +43,95 @@ a {
   border-color: rgba(198, 166, 124, 0.4);
 }
 
+/* ---- Admin / App design system ---- */
+
+/* Page header (admin, account, blog list) */
+.page-header {
+  @apply flex flex-wrap items-end justify-between gap-4;
+}
+.page-header-title {
+  @apply text-2xl font-semibold tracking-tight text-offwhite;
+}
+.page-header-desc {
+  @apply text-sm text-stone mt-1;
+}
+.page-header-badge {
+  @apply rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-stone;
+}
+
+/* Glass card (tables, lists) */
+.glass-card {
+  @apply rounded-2xl border border-white/10 bg-charcoal/70 backdrop-blur-lg overflow-hidden;
+}
+.glass-card-header {
+  @apply flex items-center justify-between border-b border-white/10 px-4 py-3 text-xs uppercase tracking-[0.2em] text-stone;
+}
+.glass-card-body {
+  @apply divide-y divide-white/5;
+}
+
+/* Data table row (admin tables) */
+.table-row {
+  @apply flex items-center gap-3 px-4 py-3 transition hover:bg-white/[0.02];
+}
+.table-row-expandable {
+  @apply cursor-pointer;
+}
+
+/* Status / role badges */
+.badge {
+  @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium;
+}
+.badge-neutral {
+  @apply border-white/10 bg-white/5 text-stone;
+}
+.badge-accent {
+  @apply border-champagne/40 bg-champagne/10 text-champagne;
+}
+.badge-success {
+  @apply border-emerald-500/30 bg-emerald-500/10 text-emerald-300;
+}
+.badge-warning {
+  @apply border-amber/30 bg-amber/10 text-amber;
+}
+.badge-error {
+  @apply border-red-500/30 bg-red-500/10 text-red-200;
+}
+
+/* Empty state */
+.empty-state {
+  @apply flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] py-12 px-6 text-center;
+}
+.empty-state-icon {
+  @apply h-10 w-10 text-stone/50;
+}
+.empty-state-title {
+  @apply text-sm font-medium text-offwhite/80;
+}
+.empty-state-desc {
+  @apply text-sm text-stone max-w-sm;
+}
+
+/* Form field (admin + client) */
+.input-field {
+  @apply w-full rounded-xl border border-white/10 bg-obsidian/60 px-4 py-3 text-sm text-offwhite placeholder:text-stone focus:border-champagne/60 focus:outline-none transition;
+}
+.input-label {
+  @apply mb-2 block text-sm font-medium text-offwhite/90;
+}
+
+/* Primary button (admin + client) */
+.btn-primary {
+  @apply rounded-full bg-champagne px-5 py-3 text-sm font-semibold text-carbon shadow-glow transition hover:bg-amber disabled:opacity-70;
+}
+.btn-secondary {
+  @apply rounded-full border border-white/20 px-4 py-2 text-sm font-medium text-offwhite transition hover:border-champagne/60 hover:text-champagne;
+}
+
+/* Client portal + blog (lighter content area) */
+.content-card {
+  @apply rounded-2xl border border-white/10 bg-charcoal/60 p-6 backdrop-blur-sm;
+}
 
 
 
