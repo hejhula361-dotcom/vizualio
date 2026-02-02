@@ -7,6 +7,7 @@ import { PageHeader } from "@/app/admin/_components/PageHeader";
 import { Badge } from "@/app/admin/_components/Badge";
 import { GlassCard, GlassCardHeader } from "@/app/admin/_components/GlassCard";
 import { EmptyState } from "@/app/admin/_components/EmptyState";
+import { RatingForm } from "@/app/account/projects/[projectId]/_components/RatingForm";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,13 @@ export default async function AccountProjectPage({ params }: { params: { project
     .single();
 
   if (error) notFound();
+
+  const { data: rating } = await supabase
+    .from("project_ratings")
+    .select("stars, text")
+    .eq("project_id", project.id)
+    .eq("client_id", clientId)
+    .maybeSingle();
 
   const { data: photos, error: photosError } = await supabase
     .from("project_photos")
@@ -79,8 +87,11 @@ export default async function AccountProjectPage({ params }: { params: { project
         </div>
 
         <div className="content-card">
-          <p className="text-sm text-stone uppercase tracking-[0.2em]">Hodnocení</p>
-          <p className="mt-2 text-sm text-stone">Doplníme v dalším kroku (1–5 hvězdiček + text).</p>
+          <RatingForm
+            projectId={project.id as string}
+            initialStars={(rating?.stars as number | null) ?? null}
+            initialText={(rating?.text as string | null) ?? null}
+          />
         </div>
       </div>
 
