@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
+    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.17",
     "lucide-react": "^0.402.0",
     "next": "^14.2.33",
+    "next-auth": "^4.24.13",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
