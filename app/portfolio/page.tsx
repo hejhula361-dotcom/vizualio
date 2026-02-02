@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Instagram, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { getPortfolioImageUrl } from "@/lib/supabase";
+import { PortfolioImage } from "@/components/PortfolioImage";
 
 const categories = [
   { id: "vse", label: "Vše" },
@@ -17,27 +18,32 @@ const categories = [
 
 type CategoryId = (typeof categories)[number]["id"];
 
+/** Položky z Supabase Storage (bucket portfolio-images) – název souboru = src */
 const portfolioItems = [
-  { title: "Obývací pokoj s výhledem", category: "interier" as CategoryId, src: "/img/viz1.png" },
-  { title: "Předsíňová skříň", category: "skrine" as CategoryId, src: "/img/viz2.png" },
-  { title: "Šatní skříň", category: "skrine" as CategoryId, src: "/img/viz3.png" },
-  { title: "Moderní dům na kopci", category: "exterier" as CategoryId, src: "/img/viz4.png" },
-  { title: "Koupelna s vanou", category: "interier" as CategoryId, src: "/img/viz5.png" },
-  { title: "Koupelna s pračkou", category: "interier" as CategoryId, src: "/img/viz6.png" },
-  { title: "Obývací pokoj se schodištěm", category: "interier" as CategoryId, src: "/img/viz1.png" },
-  { title: "Půdorys domu", category: "pudorys" as CategoryId, src: "/img/viz2.png" },
-  { title: "Jídelna s kuchyní", category: "interier" as CategoryId, src: "/img/viz3.png" },
-  { title: "Půdorys domu shora", category: "pudorys" as CategoryId, src: "/img/viz4.png" },
-  { title: "Půdorys bytu", category: "pudorys" as CategoryId, src: "/img/viz5.png" },
-  { title: "Bílá kuchyně", category: "interier" as CategoryId, src: "/img/viz6.png" },
-  { title: "Kuchyně s dřevěnými prvky", category: "interier" as CategoryId, src: "/img/viz1.png" },
-  { title: "Moderní bílá kuchyně", category: "interier" as CategoryId, src: "/img/viz2.png" },
-  { title: "Kuchyně v béžových tónech", category: "interier" as CategoryId, src: "/img/viz3.png" },
-  { title: "Vestavěná skříň s knihovnou", category: "skrine" as CategoryId, src: "/img/viz4.png" },
-  { title: "Dům u řeky – akvarel styl", category: "stylizovana" as CategoryId, src: "/img/viz5.png" },
-  { title: "Kuchyně – japonský sketch styl", category: "stylizovana" as CategoryId, src: "/img/viz6.png" },
-  { title: "3D půdorys bytu 4kk", category: "pudorys" as CategoryId, src: "/img/viz1.png" },
-  { title: "2D technický půdorys s rozměry", category: "pudorys" as CategoryId, src: "/img/viz2.png" }
+  { title: "Interiér – vizualizace", category: "interier" as CategoryId, src: "Image11.png" },
+  { title: "Interiér – scéna", category: "interier" as CategoryId, src: "Image8_000-2.png" },
+  { title: "Interiér – pohled", category: "interier" as CategoryId, src: "Image8.png" },
+  { title: "Kuchyně krásná – pohled 1", category: "interier" as CategoryId, src: "kuchyne-krasna_1.png" },
+  { title: "Kuchyně krásná – pohled 2", category: "interier" as CategoryId, src: "kuchyne-krasna_2.png" },
+  { title: "Kuchyně krásná – pohled 3", category: "interier" as CategoryId, src: "kuchyne-krasna_3.png" },
+  { title: "Kuchyně 3D vizualizace", category: "interier" as CategoryId, src: "Kuchyne3-16.9.jpg" },
+  { title: "Rodinný dům – pohled 1", category: "exterier" as CategoryId, src: "MMDum (1).jpeg" },
+  { title: "Rodinný dům – pohled 1 (PNG)", category: "exterier" as CategoryId, src: "MMDum (1).png" },
+  { title: "Rodinný dům – pohled 10", category: "exterier" as CategoryId, src: "MMDum (10).jpeg" },
+  { title: "Rodinný dům – pohled 11", category: "exterier" as CategoryId, src: "MMDum (11).jpeg" },
+  { title: "Rodinný dům – pohled 2", category: "exterier" as CategoryId, src: "MMDum (2).jpeg" },
+  { title: "Rodinný dům – pohled 2 (PNG)", category: "exterier" as CategoryId, src: "MMDum (2).png" },
+  { title: "Rodinný dům – pohled 3", category: "exterier" as CategoryId, src: "MMDum (3).jpeg" },
+  { title: "Rodinný dům – pohled 4", category: "exterier" as CategoryId, src: "MMDum (4).jpeg" },
+  { title: "Rodinný dům – pohled 5", category: "exterier" as CategoryId, src: "MMDum (5).jpeg" },
+  { title: "Rodinný dům – pohled 6", category: "exterier" as CategoryId, src: "MMDum (6).jpeg" },
+  { title: "Rodinný dům – pohled 7", category: "exterier" as CategoryId, src: "MMDum (7).jpeg" },
+  { title: "Rodinný dům – pohled 8", category: "exterier" as CategoryId, src: "MMDum (8).jpeg" },
+  { title: "Vestavěná skříň – zavřená 1", category: "skrine" as CategoryId, src: "skrin-close-1.jpg" },
+  { title: "Vestavěná skříň – zavřená 2", category: "skrine" as CategoryId, src: "skrin-close-2.jpg" },
+  { title: "Vestavěná skříň – zavřená 3", category: "skrine" as CategoryId, src: "skrin-close-3.jpg" },
+  { title: "Vestavěná skříň – otevřená", category: "skrine" as CategoryId, src: "skrin-open-1.jpg" },
+  { title: "Vestavěná skříň pod schody", category: "skrine" as CategoryId, src: "vest_skrin_pod_schody.png" }
 ];
 
 function getCategoryCount(id: CategoryId) {
@@ -179,11 +185,12 @@ export default function PortfolioPage() {
                 onKeyDown={(e) => e.key === "Enter" && setLightboxIndex(i)}
                 className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-charcoal/60 cursor-pointer will-change-transform"
               >
-                <Image
+                <PortfolioImage
                   src={item.src}
                   alt={item.title}
+                  priority={i < 6}
                   fill
-                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-105"
+                  className="object-cover transition-transform duration-300 ease-out group-hover:scale-105 z-10"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -251,12 +258,13 @@ export default function PortfolioPage() {
                   transition={{ duration: 0.2 }}
                   className="relative max-h-[60vh] w-full flex-1 md:max-h-[75vh]"
                 >
-                  <Image
+                  <PortfolioImage
                     src={currentItem.src}
                     alt={currentItem.title}
+                    fullSize
                     width={1200}
                     height={900}
-                    className="mx-auto max-h-[60vh] w-auto max-w-full object-contain md:max-h-[75vh]"
+                    className="mx-auto max-h-[60vh] w-auto max-w-full object-contain md:max-h-[75vh] z-10"
                     sizes="(max-width: 768px) 100vw, 80vw"
                     priority
                   />

@@ -4,6 +4,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Providers } from "@/app/providers";
+import { SupabasePreconnect } from "@/components/SupabasePreconnect";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="cs" className={`scroll-smooth ${inter.variable} ${grotesk.variable}`}>
       <body className="bg-carbon text-offwhite min-h-screen">
+        <SupabasePreconnect />
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <Navbar />

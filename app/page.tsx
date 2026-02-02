@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import ContactForm from "@/components/ContactForm";
 import Link from "next/link";
+import { getPortfolioImageUrl } from "@/lib/supabase";
+import { PortfolioImage } from "@/components/PortfolioImage";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -132,13 +134,14 @@ const process = [
   }
 ];
 
-const portfolio = [
-  "/img/viz1.png",
-  "/img/viz2.png",
-  "/img/viz3.png",
-  "/img/viz4.png",
-  "/img/viz5.png",
-  "/img/viz6.png"
+/** Názvy souborů v Supabase Storage (bucket portfolio-images) – ukázky na homepage */
+const portfolioFilenames = [
+  "kuchyne-krasna_1.png",
+  "MMDum (1).jpeg",
+  "skrin-close-1.jpg",
+  "Image8.png",
+  "vest_skrin_pod_schody.png",
+  "MMDum (2).jpeg"
 ];
 
 const testimonials = [
@@ -463,14 +466,21 @@ function Portfolio() {
         {...staggerContainer}
         className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {portfolio.map((src, i) => (
+        {portfolioFilenames.map((filename, i) => (
           <motion.div
-            key={src}
+            key={filename}
             {...fadeInUp}
             className="group relative overflow-hidden rounded-2xl border border-white/10 bg-charcoal/60"
           >
             <div className="relative h-64 w-full">
-              <Image src={src} alt={`Portfolio ${i + 1}`} fill className="object-cover transition duration-500 group-hover:scale-105" />
+              <PortfolioImage
+                src={filename}
+                alt={`Portfolio ${i + 1}`}
+                priority={i < 3}
+                fill
+                className="object-cover transition duration-500 group-hover:scale-105 z-10"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition group-hover:opacity-100" />
           </motion.div>
