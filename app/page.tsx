@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Sparkles,
   Clock3,
@@ -20,7 +20,9 @@ import {
   ChevronRight,
   Zap,
   Layers,
-  Mail
+  Mail,
+  Phone,
+  Instagram
 } from "lucide-react";
 import ContactForm from "@/components/ContactForm";
 import Link from "next/link";
@@ -136,20 +138,15 @@ const process = [
 
 /** Názvy souborů v Supabase Storage (bucket portfolio-images) – ukázky na homepage */
 const portfolioFilenames = [
-  "kuchyne-krasna_1.png",
+  "MMDum (1).png",
   "MMDum (1).jpeg",
-  "skrin-close-1.jpg",
-  "Image8.png",
+  "MMDum (6).jpeg",
+  "zastera-jina-varianta.png",
   "vest_skrin_pod_schody.png",
-  "MMDum (2).jpeg"
+  "KV_02.png"
 ];
 
 const testimonials = [
-  {
-    name: "Lucie, architektka",
-    quote:
-      "Výstupy působí jako fotografie. Klienti rychleji schvalují návrhy a celý proces se zrychlil."
-  },
   {
     name: "Martin, developer",
     quote:
@@ -159,6 +156,11 @@ const testimonials = [
     name: "Tereza, interiérová designérka",
     quote:
       "Skvělá komunikace a preciznost. Úpravy byly rychlé a detaily perfektně sedí na skutečné rozměry."
+  },
+  {
+    name: "Petr, truhlář",
+    quote:
+      "Vizualizace kuchyně před výrobou ušetřily čas i materiál. Zákazník viděl výsledek dopředu a byl spokojen na první dobrou."
   }
 ];
 
@@ -308,7 +310,61 @@ function Hero() {
 }
 
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia("(max-width: 767px)");
+    setIsMobile(m.matches);
+    const handler = () => setIsMobile(m.matches);
+    m.addEventListener("change", handler);
+    return () => m.removeEventListener("change", handler);
+  }, []);
+  return isMobile;
+}
+
+const SLUZBY_AUTO_SCROLL_MS = 10000;
+
 function Services() {
+  const isMobile = useIsMobile();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const cardIndexRef = useRef(0);
+
+  useEffect(() => {
+    if (!isMobile || !scrollRef.current) return;
+    const el = scrollRef.current;
+    const cards = el.querySelectorAll<HTMLElement>("[data-sluzby-card]");
+    const count = sluzbyCards.length;
+    if (count === 0) return;
+
+    const scrollToCenterCard = (index: number) => {
+      const card = cards[index];
+      if (!card) return;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) return;
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const viewCenter = el.clientWidth / 2;
+      const targetScroll = Math.max(0, Math.min(maxScroll, cardCenter - viewCenter));
+      el.scrollTo({ left: targetScroll, behavior: "smooth" });
+    };
+
+    const step = () => {
+      cardIndexRef.current = (cardIndexRef.current + 1) % count;
+      scrollToCenterCard(cardIndexRef.current);
+    };
+
+    const id = setInterval(step, SLUZBY_AUTO_SCROLL_MS);
+    return () => clearInterval(id);
+  }, [isMobile]);
+
+  const containerClassName =
+    "mt-10 flex overflow-x-auto gap-6 py-8 px-6 -mx-6 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:py-0 scrollbar-hide";
+  const cardClassName = (item: (typeof sluzbyCards)[0]) =>
+    `card-hover relative flex-shrink-0 w-[min(72vw,280px)] rounded-2xl border p-8 transition duration-300 md:w-auto md:flex-shrink md:min-w-0 mt-5 mb-10 md:mt-0 md:mb-0 ${
+      item.type === "featured"
+        ? "border-2 border-champagne bg-charcoal/80 shadow-glow"
+        : "border-white/10 bg-charcoal/50"
+    }`;
+
   return (
     <section id="sluzby" className="section-container">
       <motion.div {...fadeInUp} className="flex items-center justify-between gap-4">
@@ -319,44 +375,80 @@ function Services() {
           </p>
         </div>
       </motion.div>
-      <motion.div
-        {...staggerContainer}
-        className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-      >
-        {sluzbyCards.map((item) => (
-          <motion.div
-            key={item.title}
-            {...fadeInUp}
-            className="card-hover relative rounded-2xl border border-white/10 bg-charcoal/50 p-8 transition duration-300"
-          >
-            {item.badge && (
-              <div
-                className={
-                  item.type === "floorplan"
-                    ? "absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-champagne px-5 py-1 text-xs font-bold uppercase text-carbon whitespace-nowrap min-w-[140px] text-center"
-                    : "absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-champagne px-3 py-1 text-xs font-bold uppercase text-carbon"
-                }
-              >
-                {item.type !== "floorplan" && <Star className="h-3 w-3" />}
-                {item.badge}
+      {isMobile ? (
+        <div ref={scrollRef} className={containerClassName}>
+          {sluzbyCards.map((item) => (
+            <div key={item.title} data-sluzby-card className={cardClassName(item)}>
+              {item.badge && (
+                <div
+                  className={
+                    item.type === "floorplan"
+                      ? "absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-champagne px-5 py-1 text-xs font-bold uppercase text-carbon whitespace-nowrap min-w-[140px] text-center"
+                      : "absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-champagne px-3 py-1 text-xs font-bold uppercase text-carbon"
+                  }
+                >
+                  {item.type !== "floorplan" && <Star className="h-3 w-3" />}
+                  {item.badge}
+                </div>
+              )}
+              <h3 className="text-xl font-semibold text-offwhite mb-4">{item.title}</h3>
+              <p className="text-stone text-sm mb-6 leading-relaxed">{item.desc}</p>
+              <div className="rounded-xl bg-white/5 p-5 mb-6 border-l-4 border-champagne">
+                {item.priceLabel && (
+                  <p className="text-stone text-xs font-medium uppercase tracking-wide mb-1">
+                    {item.priceLabel}
+                  </p>
+                )}
+                <p className="text-3xl font-bold text-champagne">{item.price}</p>
+                {item.oldPrice && (
+                  <p className="text-stone text-xs line-through mt-1">{item.oldPrice}</p>
+                )}
               </div>
-            )}
-            <h3 className="text-xl font-semibold text-offwhite mb-4">{item.title}</h3>
-            <p className="text-stone text-sm mb-6 leading-relaxed">{item.desc}</p>
-            <div className="rounded-xl bg-white/5 p-5 mb-6 border-l-4 border-champagne">
-              {item.priceLabel && (
-                <p className="text-stone text-xs font-medium uppercase tracking-wide mb-1">
-                  {item.priceLabel}
-                </p>
-              )}
-              <p className="text-3xl font-bold text-champagne">{item.price}</p>
-              {item.oldPrice && (
-                <p className="text-stone text-xs line-through mt-1">{item.oldPrice}</p>
-              )}
             </div>
-          </motion.div>
-        ))}
-      </motion.div>
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          ref={scrollRef}
+          {...staggerContainer}
+          className={containerClassName}
+        >
+          {sluzbyCards.map((item) => (
+            <motion.div
+              key={item.title}
+              data-sluzby-card
+              {...fadeInUp}
+              className={cardClassName(item)}
+            >
+              {item.badge && (
+                <div
+                  className={
+                    item.type === "floorplan"
+                      ? "absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-champagne px-5 py-1 text-xs font-bold uppercase text-carbon whitespace-nowrap min-w-[140px] text-center"
+                      : "absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-champagne px-3 py-1 text-xs font-bold uppercase text-carbon"
+                  }
+                >
+                  {item.type !== "floorplan" && <Star className="h-3 w-3" />}
+                  {item.badge}
+                </div>
+              )}
+              <h3 className="text-xl font-semibold text-offwhite mb-4">{item.title}</h3>
+              <p className="text-stone text-sm mb-6 leading-relaxed">{item.desc}</p>
+              <div className="rounded-xl bg-white/5 p-5 mb-6 border-l-4 border-champagne">
+                {item.priceLabel && (
+                  <p className="text-stone text-xs font-medium uppercase tracking-wide mb-1">
+                    {item.priceLabel}
+                  </p>
+                )}
+                <p className="text-3xl font-bold text-champagne">{item.price}</p>
+                {item.oldPrice && (
+                  <p className="text-stone text-xs line-through mt-1">{item.oldPrice}</p>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
       <motion.div {...fadeInUp} className="mt-10 flex items-center justify-center gap-4 max-w-2xl mx-auto">
         <div className="flex-1 flex items-center justify-end gap-0 min-w-0">
           <div className="h-px flex-1 max-w-[80px] bg-champagne/50" />
@@ -380,25 +472,27 @@ function Services() {
 function WhyUs() {
   return (
     <section id="proc" className="section-container pt-1.5 pb-0 md:pt-1.5">
-      <motion.div {...fadeInUp} className="max-w-3xl">
+      <motion.div {...fadeInUp} className="max-w-6xl">
         <h2 className="section-title">Proč Vizualio</h2>
-        <p className="section-subtitle">
+        <p className="section-subtitle max-w-none">
           Cit pro detail, přesnost, rychlá komunikaci, nejmodernější technologie a mnohem víc - to z nás dělá nejlepšího kandidáta.
         </p>
       </motion.div>
       <motion.div
         {...staggerContainer}
-        className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4"
+        className="mt-10 grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-4"
       >
-        {whyUs.map((item) => (
+        {whyUs.map((item, index) => (
           <motion.div
             key={item.title}
             {...fadeInUp}
-            className="card card-hover h-full"
+            className={`card card-hover h-full flex flex-row items-center gap-3 md:flex-col md:items-stretch md:gap-0 ${index === 3 ? "hidden md:flex" : ""}`}
           >
-            <item.icon className="h-8 w-8 text-champagne" />
-            <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
-            <p className="mt-2 text-sm text-stone">{item.desc}</p>
+            <item.icon className="h-6 w-6 md:h-8 md:w-8 text-champagne flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h3 className="text-sm font-semibold md:mt-4 md:text-lg">{item.title}</h3>
+              <p className="mt-0.5 text-xs text-stone md:mt-2 md:text-sm">{item.desc}</p>
+            </div>
           </motion.div>
         ))}
       </motion.div>
@@ -408,7 +502,7 @@ function WhyUs() {
 
 function Process() {
   return (
-    <section id="proces" className="section-container">
+    <section id="proces" className="section-container hidden md:block">
       <motion.div {...fadeInUp} className="max-w-3xl">
         <h2 className="section-title">Proces spolupráce</h2>
         <p className="section-subtitle">Jasné kroky od nápadu po finální vizualizaci.</p>
@@ -464,33 +558,77 @@ function Portfolio() {
       </motion.div>
       <motion.div
         {...staggerContainer}
-        className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3"
       >
-        {portfolioFilenames.map((filename, i) => (
-          <motion.div
-            key={filename}
-            {...fadeInUp}
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-charcoal/60"
+        {portfolioFilenames.map((filename, i) => {
+          const isHiddenOnMobile = i >= 4;
+          const isWideOnMobile = i === 0 || i === 3;
+          const isSquareOnMobile = i === 1 || i === 2;
+          const isFifthImage = i === 4;
+          return (
+            <motion.div
+              key={filename}
+              {...fadeInUp}
+              className={`group relative overflow-hidden rounded-2xl border border-white/10 bg-charcoal/60 ${
+                isHiddenOnMobile ? "hidden sm:block" : ""
+              } ${isWideOnMobile ? "col-span-2" : ""} ${isFifthImage ? "sm:col-span-2" : ""}`}
+            >
+              <div
+                className={`relative w-full ${
+                  isWideOnMobile ? "aspect-video sm:aspect-auto sm:h-64" : ""
+                } ${isSquareOnMobile ? "aspect-square sm:aspect-auto sm:h-64" : ""} ${
+                  isFifthImage ? "sm:aspect-auto sm:h-64" : isHiddenOnMobile ? "sm:h-64" : ""
+                }`}
+              >
+                <PortfolioImage
+                  src={filename}
+                  alt={`Portfolio ${i + 1}`}
+                  priority={i < 3}
+                  fill
+                  className="object-cover transition duration-500 group-hover:scale-105 z-10"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition group-hover:opacity-100" />
+            </motion.div>
+          );
+        })}
+      </motion.div>
+      <motion.div {...fadeInUp} className="mt-10 flex flex-col items-center gap-4">
+        <p className="text-stone text-sm">Podívejte se na další vizualizace</p>
+        <div className="flex items-center justify-center gap-4 max-w-2xl w-full">
+          <div className="flex-1 flex items-center justify-end gap-0 min-w-0">
+            <div className="h-px flex-1 max-w-[80px] bg-champagne/50" />
+            <ChevronRight className="h-5 w-5 flex-shrink-0 text-champagne/70" />
+          </div>
+          <Link
+            href="/portfolio"
+            className="inline-flex items-center gap-2 rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber flex-shrink-0"
           >
-            <div className="relative h-64 w-full">
-              <PortfolioImage
-                src={filename}
-                alt={`Portfolio ${i + 1}`}
-                priority={i < 3}
-                fill
-                className="object-cover transition duration-500 group-hover:scale-105 z-10"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition group-hover:opacity-100" />
-          </motion.div>
-        ))}
+            Portfolio
+          </Link>
+          <div className="flex-1 flex items-center justify-start gap-0 min-w-0">
+            <ChevronLeft className="h-5 w-5 flex-shrink-0 text-champagne/70" />
+            <div className="h-px flex-1 max-w-[80px] bg-champagne/50" />
+          </div>
+        </div>
       </motion.div>
     </section>
   );
 }
 
+function TestimonialCard({ item, className = "" }: { item: (typeof testimonials)[0]; className?: string }) {
+  return (
+    <div className={`card h-full flex-shrink-0 ${className}`}>
+      <Quote className="h-6 w-6 text-champagne" />
+      <p className="mt-4 text-sm text-offwhite/90">{item.quote}</p>
+      <p className="mt-4 text-sm font-semibold text-offwhite">{item.name}</p>
+    </div>
+  );
+}
+
 function Testimonials() {
+  const isMobile = useIsMobile();
   return (
     <section id="reference" className="section-container">
       <motion.div {...fadeInUp} className="flex items-center justify-between gap-4">
@@ -500,22 +638,30 @@ function Testimonials() {
         </div>
         <Star className="h-8 w-8 text-champagne hidden md:block" />
       </motion.div>
-      <motion.div
-        {...staggerContainer}
-        className="mt-10 grid gap-6 md:grid-cols-3"
-      >
-        {testimonials.map((item) => (
-          <motion.div
-            key={item.name}
-            {...fadeInUp}
-            className="card h-full"
-          >
-            <Quote className="h-6 w-6 text-champagne" />
-            <p className="mt-4 text-sm text-offwhite/90">{item.quote}</p>
-            <p className="mt-4 text-sm font-semibold text-offwhite">{item.name}</p>
-          </motion.div>
-        ))}
-      </motion.div>
+      {isMobile ? (
+        <div className="mt-10 -mx-6 overflow-hidden md:mx-0">
+          <div className="flex testimonials-marquee-inner w-max gap-6 px-6 md:px-0">
+            {[...testimonials, ...testimonials].map((item, i) => (
+              <TestimonialCard
+                key={`${item.name}-${i}`}
+                item={item}
+                className="w-[min(85vw,320px)]"
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <motion.div
+          {...staggerContainer}
+          className="mt-10 grid gap-6 md:grid-cols-3"
+        >
+          {testimonials.map((item) => (
+            <motion.div key={item.name} {...fadeInUp}>
+              <TestimonialCard item={item} />
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </section>
   );
 }
@@ -567,30 +713,58 @@ function Contact() {
         >
           <h3 className="text-xl font-semibold text-offwhite">Co máte na mysli?</h3>
           <p className="mt-2 text-sm text-stone">
-            Popište prostor, účel, rozměry, styl… nebo prostě napište: „Chci aby to vypadalo hustě.“
-            Nic není špatně.
+            Stačí pár vět. My už víme, jak z toho udělat vizualizaci, která dává smysl.
           </p>
           <ContactForm />
         </motion.div>
-        <motion.div
-          {...fadeInUp}
-          className="card h-full"
-        >
-          <h4 className="text-lg font-semibold text-offwhite">Co se stane po odeslání?</h4>
-          <ul className="mt-4 space-y-3 text-sm text-stone">
-            <li>• Ozveme se do 24 hodin.</li>
-            <li>• Domluvíme styl, úhly a termíny.</li>
-            <li>• Připravíme rychlý odhad ceny.</li>
-            <li>• Dodáme vizualizaci, která prodává.</li>
-          </ul>
-          <div className="mt-6 rounded-xl border border-white/10 bg-gradient-to-br from-charcoal/80 to-obsidian/70 p-4 text-sm text-offwhite/90">
-            <p className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-champagne" />
-              info@vizualio.cz
-            </p>
-            <p className="mt-2 text-stone">Telefon? Napište a zavoláme vám zpět.</p>
-          </div>
-        </motion.div>
+        <div className="flex h-full min-h-0 max-w-md flex-col gap-6 mx-auto w-full lg:max-w-none lg:mx-0">
+          <motion.div {...fadeInUp} className="card flex flex-1 flex-col min-h-0 p-8">
+            <h4 className="text-lg font-semibold text-offwhite">Co se stane po odeslání?</h4>
+            <ul className="mt-4 space-y-3 text-sm text-stone">
+              <li>• Ozveme se do 24 hodin.</li>
+              <li>• Domluvíme styl, úhly a termíny.</li>
+              <li>• Připravíme rychlý odhad ceny.</li>
+              <li>• Dodáme vizualizaci, která vám vyrazí dech.</li>
+            </ul>
+          </motion.div>
+          <motion.div {...fadeInUp} className="card flex flex-1 flex-col min-h-0 p-8">
+            <h4 className="text-lg font-semibold text-offwhite">Kontakt</h4>
+            <div className="mt-4 flex flex-wrap items-start justify-between gap-6">
+              <div className="space-y-3 text-sm text-offwhite/90 flex-1 min-w-0">
+                <a
+                  href="mailto:info@vizualio.cz"
+                  className="flex items-center gap-2 transition hover:text-champagne"
+                >
+                  <Mail className="h-4 w-4 text-champagne flex-shrink-0" />
+                  info@vizualio.cz
+                </a>
+                <a
+                  href="tel:+420721369070"
+                  className="flex items-center gap-2 transition hover:text-champagne"
+                >
+                  <Phone className="h-4 w-4 text-champagne flex-shrink-0" />
+                  721 369 070
+                </a>
+                <a
+                  href="tel:+420725486505"
+                  className="flex items-center gap-2 transition hover:text-champagne"
+                >
+                  <Phone className="h-4 w-4 text-champagne flex-shrink-0" />
+                  725 486 505
+                </a>
+              </div>
+              <a
+                href="https://www.instagram.com/vizualio.cz/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-2 transition hover:text-champagne text-offwhite/90 mr-4"
+              >
+                <Instagram className="h-14 w-14 text-champagne" />
+                <span className="text-sm">@vizualio.cz</span>
+              </a>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

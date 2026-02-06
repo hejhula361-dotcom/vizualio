@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSectionColor } from "@/app/context/SectionColorContext";
 
 const faq = [
   {
@@ -26,6 +26,8 @@ const faq = [
 
 export default function Footer() {
   const pathname = usePathname();
+  const { displayColor } = useSectionColor();
+  const isOnCenik = pathname === "/cenik";
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const isAdmin = pathname?.startsWith("/admin") ?? false;
   const isAccount = pathname?.startsWith("/account") ?? false;
@@ -50,8 +52,13 @@ export default function Footer() {
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="grid gap-8 md:grid-cols-3 mb-8">
           <div>
-            <Link href="/" className="inline-block">
-              <Image src="/img/logo.svg" alt="Vizualio" width={64} height={64} className="h-28 w-28" />
+            <Link href="/" className="inline-block" aria-label="Vizualio – úvod">
+              <span
+                className="logo-gold h-28 w-28 inline-block transition-colors duration-300"
+                style={isOnCenik ? { backgroundColor: displayColor } : undefined}
+                role="img"
+                aria-hidden="true"
+              />
             </Link>
           </div>
           <div className="space-y-2 text-sm">

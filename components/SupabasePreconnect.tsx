@@ -18,8 +18,8 @@ export function SupabasePreconnect() {
     linkDns.href = url;
     document.head.appendChild(linkDns);
     return () => {
-      document.head.removeChild(linkPreconnect);
-      document.head.removeChild(linkDns);
+      if (linkPreconnect.parentNode === document.head) document.head.removeChild(linkPreconnect);
+      if (linkDns.parentNode === document.head) document.head.removeChild(linkDns);
     };
   }, []);
   return null;

@@ -17,6 +17,7 @@ export type InquiryRow = {
   project_type: string | null;
   idea: string;
   message: string | null;
+  category: string | null;
 };
 
 export function InquiriesClient({ inquiries }: { inquiries: InquiryRow[] }) {
@@ -64,12 +65,16 @@ export function InquiriesClient({ inquiries }: { inquiries: InquiryRow[] }) {
                       <div>
                         <p className="text-sm font-semibold text-offwhite">{lead.name}</p>
                         <p className="text-xs text-stone">{lead.email}</p>
+                        {lead.phone && <p className="text-xs text-stone">{lead.phone}</p>}
                       </div>
                       <p className="text-xs text-stone">
                         {new Date(lead.created_at).toLocaleDateString("cs-CZ")}
                       </p>
                     </div>
-                    <p className="mt-2 line-clamp-2 text-sm text-offwhite/80">{lead.idea}</p>
+                    <p className="mt-2 line-clamp-2 text-sm text-offwhite/80">
+                      {lead.category && <span className="text-champagne/90">{lead.category} · </span>}
+                      {lead.idea}
+                    </p>
                   </motion.button>
 
                   {isExpanded && (
@@ -84,14 +89,30 @@ export function InquiriesClient({ inquiries }: { inquiries: InquiryRow[] }) {
                           <p className="text-stone text-xs uppercase tracking-[0.2em]">Klient</p>
                           <p className="text-offwhite font-semibold">{lead.name}</p>
                           <p className="text-stone">{lead.email}</p>
-                          {lead.phone && <p className="text-stone">{lead.phone}</p>}
+                          <p className="text-stone">
+                            {lead.phone ? (
+                              <a href={`tel:${lead.phone.replace(/\s/g, "")}`} className="text-champagne hover:underline">
+                                {lead.phone}
+                              </a>
+                            ) : (
+                              "—"
+                            )}
+                          </p>
                         </div>
+                        {lead.category && (
+                          <div>
+                            <p className="text-stone text-xs uppercase tracking-[0.2em]">Kategorie</p>
+                            <p className="text-offwhite/90">{lead.category}</p>
+                          </div>
+                        )}
+                        {lead.project_type && (
+                          <div>
+                            <p className="text-stone text-xs uppercase tracking-[0.2em]">Projekt</p>
+                            <p className="text-offwhite/90">{lead.project_type}</p>
+                          </div>
+                        )}
                         <div>
-                          <p className="text-stone text-xs uppercase tracking-[0.2em]">Projekt</p>
-                          <p className="text-offwhite/90">{lead.project_type || "Neuvedeno"}</p>
-                        </div>
-                        <div>
-                          <p className="text-stone text-xs uppercase tracking-[0.2em]">Myšlenka</p>
+                          <p className="text-stone text-xs uppercase tracking-[0.2em]">Co si představujete</p>
                           <p className="text-offwhite/90 whitespace-pre-line">{lead.idea}</p>
                         </div>
                         {lead.message && (

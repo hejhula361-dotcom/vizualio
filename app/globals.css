@@ -17,6 +17,20 @@ a {
   @apply text-offwhite;
 }
 
+/* Logo v barvě zlaté #C6A67C (maska z logo.svg) */
+.logo-gold {
+  display: inline-block;
+  background-color: #c6a67c;
+  mask-image: url("/img/logo.svg");
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: url("/img/logo.svg");
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+}
+
 .glass-panel {
   @apply border border-white/10 bg-charcoal/70 backdrop-blur-lg;
 }
@@ -191,5 +205,25 @@ a {
   @apply mt-6 rounded-2xl border border-white/10;
 }
 
+/* Horizontální scroll bez scrollbaru (např. karty služeb na mobilu) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
+/* Reference – plynulý horizontální loop na mobilu */
+@keyframes testimonials-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.testimonials-marquee-inner {
+  animation: testimonials-marquee 45s linear infinite;
+}
 

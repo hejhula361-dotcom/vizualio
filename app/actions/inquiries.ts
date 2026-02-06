@@ -4,23 +4,32 @@ import { headers } from "next/headers";
 
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
+const CATEGORY_LABELS: Record<string, string> = {
+  interier: "Vizualizace interiéru",
+  exterier: "Vizualizace exteriéru",
+  pudorysy: "Půdorysy 2D/3D"
+};
+
 export type InquiryInput = {
-  idea: string;
+  category?: string | null;
+  idea?: string;
   name: string;
   email: string;
-  phone?: string;
-  projectType?: string;
+  phone: string;
   message?: string;
 };
 
 export async function submitInquiry(input: InquiryInput) {
-  const idea = input.idea?.trim() ?? "";
   const name = input.name?.trim() ?? "";
   const email = input.email?.trim() ?? "";
+  const phone = input.phone?.trim() ?? "";
+  const idea = (input.idea?.trim() ?? "").length > 0 ? input.idea!.trim() : "—";
 
-  if (!idea || !name || !email) {
-    throw new Error("Chybí povinné údaje (myšlenka, jméno, e-mail).");
+  if (!name || !email || !phone) {
+    throw new Error("Chybí povinné údaje (jméno, e-mail, telefon).");
   }
+
+  const categoryLabel = input.category ? CATEGORY_LABELS[input.category] ?? input.category : null;
 
   const h = headers();
   const userAgent = h.get("user-agent");
@@ -29,11 +38,12 @@ export async function submitInquiry(input: InquiryInput) {
 
   const supabase = getSupabaseAdmin();
   const { error } = await supabase.from("inquiries").insert({
+    category: categoryLabel,
     idea,
     name,
     email,
-    phone: input.phone?.trim() || null,
-    project_type: input.projectType?.trim() || null,
+    phone,
+    project_type: null,
     message: input.message?.trim() || null,
     ip,
     user_agent: userAgent

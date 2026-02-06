@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { CheckCircle2, Clock, Star, ImageIcon } from "lucide-react";
+import { CenikScrollSpy } from "@/app/cenik/_components/CenikScrollSpy";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 24 },
@@ -116,9 +117,29 @@ const extraServices = [
   { title: "Expresní dodávka (1 den)", desc: "Dle náročnosti projektu, pro běžné zakázky", price: "od +1 000 Kč" }
 ];
 
+const CTA_GOLD = "#C6A67C";
+
+function CenikCTAButton() {
+  return (
+    <motion.a
+      href="/#kontakt"
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.97 }}
+      className="inline-flex items-center justify-center rounded-full px-4 py-2 text-carbon text-sm font-medium transition hover:opacity-90"
+      style={{
+        backgroundColor: CTA_GOLD,
+        boxShadow: "0 0 24px rgba(198, 166, 124, 0.25)"
+      }}
+    >
+      Nezávazně poptat
+    </motion.a>
+  );
+}
+
 export default function CenikPage() {
   return (
     <div className="pb-24">
+      <CenikScrollSpy />
       {/* Hero */}
       <section className="section-container pt-12 pb-6 md:pt-12 md:pb-6">
         <motion.div {...fadeInUp} className="text-center">
@@ -136,7 +157,11 @@ export default function CenikPage() {
         <motion.div {...fadeInUp} className="flex flex-wrap justify-center gap-4 mt-10">
           <Link
             href="/#portfolio"
-            className="inline-flex items-center gap-2 rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-carbon text-sm font-medium transition hover:opacity-90"
+            style={{
+              backgroundColor: CTA_GOLD,
+              boxShadow: "0 0 24px rgba(198, 166, 124, 0.25)"
+            }}
           >
             <ImageIcon className="h-4 w-4" />
             Naše portfolio
@@ -145,23 +170,24 @@ export default function CenikPage() {
       </section>
 
       {/* Vizualizace Interiéru */}
-      <section className="section-container !pt-0 pb-0">
+      <section data-cenik-section="interior" className="section-container pt-12 pb-0 md:pt-16">
         <motion.div {...fadeInUp} className="mb-10">
-          <h2 className="section-title pl-6 border-l-4 border-champagne">Vizualizace Interiéru</h2>
+          <h2 className="section-title pl-6 border-l-4 border-[#C6A67C] text-[#C6A67C]">Vizualizace Interiéru</h2>
         </motion.div>
         <motion.div {...staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {interiorPricing.map((item) => (
             <motion.div
               key={item.title}
               {...fadeInUp}
-              className={`card-hover relative rounded-2xl border p-8 transition duration-300 ${
+              className={`card-hover relative rounded-2xl border p-8 transition duration-300 hover:-translate-y-1 hover:border-[#C6A67C]/50 hover:shadow-[0_0_40px_rgba(198,166,124,0.28)] ${
                 item.featured
-                  ? "border-2 border-champagne bg-charcoal/80 shadow-glow"
+                  ? "border-2 border-[#C6A67C] bg-charcoal/80"
                   : "border-white/10 bg-charcoal/50"
               }`}
+              style={item.featured ? { boxShadow: "0 0 30px rgba(198, 166, 124, 0.28)" } : undefined}
             >
               {item.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-champagne px-3 py-1 text-xs font-bold uppercase text-carbon">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-[#C6A67C] px-3 py-1 text-xs font-bold uppercase text-carbon">
                   <Star className="h-3 w-3" />
                   {item.badge}
                 </div>
@@ -169,16 +195,16 @@ export default function CenikPage() {
               <h3 className="text-xl font-semibold text-offwhite mb-4">{item.title}</h3>
               <p className="text-stone text-sm mb-6 leading-relaxed">{item.desc}</p>
               <div
-                className={`rounded-xl p-5 mb-6 border-l-4 border-champagne ${
-                  item.featured ? "bg-champagne/10" : "bg-white/5"
+                className={`rounded-xl p-5 mb-6 border-l-4 border-[#C6A67C] ${
+                  item.featured ? "bg-[#C6A67C]/10" : "bg-white/5"
                 }`}
               >
                 <p className="text-stone text-xs font-medium uppercase tracking-wide mb-1">
                   {item.priceLabel}
                 </p>
-                <p className="text-3xl font-bold text-champagne">{item.price}</p>
+                <p className="text-3xl font-bold text-[#C6A67C]">{item.price}</p>
                 {item.priceSub && (
-                  <p className="text-xs text-champagne/90 mt-2">{item.priceSub}</p>
+                  <p className="text-xs text-[#C6A67C]/90 mt-2">{item.priceSub}</p>
                 )}
               </div>
               <div className="space-y-2">
@@ -186,7 +212,7 @@ export default function CenikPage() {
                 <ul className="space-y-2 text-sm">
                   {item.includes.map((inc) => (
                     <li key={inc} className="flex items-center gap-3 text-stone">
-                      <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-champagne" />
+                      <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#C6A67C]" />
                       {inc}
                     </li>
                   ))}
@@ -198,38 +224,32 @@ export default function CenikPage() {
       </section>
 
       {/* Vizualizace Exteriéru */}
-      <section className="section-container">
+      <section data-cenik-section="exterior" className="section-container">
         <motion.div {...fadeInUp} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
-          <h2 className="section-title pl-6 border-l-4 border-champagne">Vizualizace Exteriéru</h2>
-          <Link
-            href="/#kontakt"
-            className="rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber"
-          >
-            Kontaktujte nás
-          </Link>
+          <h2 className="section-title pl-6 border-l-4 border-[#4F6D7A] text-[#4F6D7A]">Vizualizace Exteriéru</h2>
         </motion.div>
         <motion.div {...staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {exteriorPricing.map((item) => (
             <motion.div
               key={item.title}
               {...fadeInUp}
-              className="card-hover rounded-2xl border border-white/10 bg-charcoal/50 p-8 transition duration-300"
+              className="card-hover rounded-2xl border border-white/10 bg-charcoal/50 p-8 transition duration-300 hover:-translate-y-1 hover:border-[#4F6D7A]/50 hover:shadow-[0_0_40px_rgba(79,109,122,0.28)]"
             >
               <h3 className="text-xl font-semibold text-offwhite mb-4">{item.title}</h3>
               <p className="text-stone text-sm mb-6 leading-relaxed">{item.desc}</p>
-              <div className="rounded-xl bg-white/5 p-5 mb-6 border-l-4 border-champagne">
+              <div className="rounded-xl bg-white/5 p-5 mb-6 border-l-4 border-[#4F6D7A]">
                 <p className="text-stone text-xs font-medium uppercase tracking-wide mb-1">
                   {item.priceLabel}
                 </p>
-                <p className="text-3xl font-bold text-champagne">{item.price}</p>
+                <p className="text-3xl font-bold text-[#4F6D7A]">{item.price}</p>
                 {item.priceSub && (
-                  <p className="text-xs text-champagne/90 mt-2">{item.priceSub}</p>
+                  <p className="text-xs text-[#4F6D7A]/90 mt-2">{item.priceSub}</p>
                 )}
               </div>
               <ul className="space-y-2 text-sm">
                 {item.includes.map((inc) => (
                   <li key={inc} className="flex items-center gap-3 text-stone">
-                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-champagne" />
+                    <CheckCircle2 className="h-4 w-4 flex-shrink-0 text-[#4F6D7A]" />
                     {inc}
                   </li>
                 ))}
@@ -240,40 +260,34 @@ export default function CenikPage() {
       </section>
 
       {/* Půdorysy 2D/3D */}
-      <section className="section-container">
+      <section data-cenik-section="floorplan" className="section-container">
         <motion.div {...fadeInUp} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
-          <h2 className="section-title pl-6 border-l-4 border-champagne">Půdorysy 2D/3D</h2>
-          <Link
-            href="/#kontakt"
-            className="rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber"
-          >
-            Kontaktujte nás
-          </Link>
+          <h2 className="section-title pl-6 border-l-4 border-[#5F7F73] text-[#5F7F73]">Půdorysy 2D/3D</h2>
         </motion.div>
         <motion.div {...staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {floorplanPricing.map((item) => (
             <motion.div
               key={item.title}
               {...fadeInUp}
-              className={`card-hover relative rounded-2xl border p-8 transition duration-300 ${
+              className={`card-hover relative rounded-2xl border p-8 transition duration-300 hover:-translate-y-1 hover:border-[#5F7F73]/50 hover:shadow-[0_0_40px_rgba(95,127,115,0.28)] bg-charcoal/50 ${
                 item.badge
-                  ? "border-2 border-champagne/50"
-                  : "border-white/10 bg-charcoal/50"
+                  ? "border-2 border-[#5F7F73]/70"
+                  : "border-white/10"
               }`}
             >
               {item.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-champagne px-5 py-1 text-xs font-bold uppercase text-carbon whitespace-nowrap min-w-[140px] text-center">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#5F7F73] px-5 py-1 text-xs font-bold uppercase text-carbon whitespace-nowrap min-w-[140px] text-center">
                   {item.badge}
                 </div>
               )}
               <h3 className="text-xl font-semibold text-offwhite mb-4">{item.title}</h3>
               <p className="text-stone text-sm mb-6 leading-relaxed">{item.desc}</p>
               <div
-                className={`rounded-xl border-l-4 border-champagne p-5 ${
-                  item.oldPrice ? "bg-champagne/10" : "bg-white/5"
+                className={`rounded-xl border-l-4 border-[#5F7F73] p-5 ${
+                  item.oldPrice ? "bg-[#5F7F73]/10" : "bg-white/5"
                 }`}
               >
-                <p className="text-3xl font-bold text-champagne">{item.price}</p>
+                <p className="text-3xl font-bold text-[#5F7F73]">{item.price}</p>
                 {item.oldPrice && (
                   <p className="text-stone text-xs line-through mt-1">{item.oldPrice}</p>
                 )}
@@ -284,8 +298,8 @@ export default function CenikPage() {
       </section>
 
       {/* Dodatečné služby */}
-      <section className="section-container">
-        <motion.h2 {...fadeInUp} className="section-title pl-6 border-l-4 border-champagne mb-10">
+      <section data-cenik-section="extra" className="section-container">
+        <motion.h2 {...fadeInUp} className="section-title pl-6 border-l-4 border-[#6A5D7B] text-[#6A5D7B] mb-10">
           Dodatečné služby
         </motion.h2>
         <motion.div {...staggerContainer} className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -293,21 +307,21 @@ export default function CenikPage() {
             <motion.div
               key={item.title}
               {...fadeInUp}
-              className="card-hover rounded-2xl border border-white/10 bg-charcoal/50 p-6 flex items-center justify-between gap-4 transition duration-300"
+              className="card-hover rounded-2xl border border-white/10 bg-charcoal/50 p-6 flex items-center justify-between gap-4 transition duration-300 hover:-translate-y-1 hover:border-[#6A5D7B]/50 hover:shadow-[0_0_40px_rgba(106,93,123,0.28)]"
             >
               <div>
                 <h3 className="text-lg font-semibold text-offwhite mb-2">{item.title}</h3>
                 <p className="text-stone text-sm">{item.desc}</p>
               </div>
-              <p className="text-2xl font-bold text-champagne whitespace-nowrap">{item.price}</p>
+              <p className="text-2xl font-bold text-[#6A5D7B] whitespace-nowrap">{item.price}</p>
             </motion.div>
           ))}
         </motion.div>
       </section>
 
       {/* Nábytek na míru */}
-      <section className="section-container">
-        <motion.h2 {...fadeInUp} className="section-title pl-6 border-l-4 border-champagne mb-10">
+      <section data-cenik-section="furniture" className="section-container">
+        <motion.h2 {...fadeInUp} className="section-title pl-6 border-l-4 border-[#B08968] text-[#B08968] mb-10">
           Nábytek na míru + Výroba
         </motion.h2>
         <motion.div {...fadeInUp} className="rounded-2xl border border-white/10 bg-charcoal/50 p-8">
@@ -323,9 +337,9 @@ export default function CenikPage() {
             ].map((step) => (
               <div
                 key={step.num}
-                className="rounded-xl border border-white/10 bg-white/5 p-5 text-center transition hover:border-champagne/30"
+                className="rounded-xl border border-white/10 bg-white/5 p-5 text-center transition hover:border-[#B08968]/50 hover:shadow-[0_0_28px_rgba(176,137,104,0.25)]"
               >
-                <div className="w-10 h-10 rounded-lg bg-champagne text-carbon font-bold flex items-center justify-center mx-auto mb-3 text-lg">
+                <div className="w-10 h-10 rounded-lg bg-[#B08968] text-carbon font-bold flex items-center justify-center mx-auto mb-3 text-lg">
                   {step.num}
                 </div>
                 <p className="text-offwhite font-semibold text-sm mb-1">{step.title}</p>
@@ -333,7 +347,7 @@ export default function CenikPage() {
               </div>
             ))}
           </div>
-          <div className="rounded-xl border border-champagne/20 bg-white/5 p-6 mb-6">
+          <div className="rounded-xl border border-[#B08968]/30 bg-white/5 p-6 mb-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <p className="text-offwhite font-medium mb-2">
@@ -347,7 +361,7 @@ export default function CenikPage() {
                     "Realizace po celé ČR i zahraničí"
                   ].map((line) => (
                     <li key={line} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-champagne flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-[#B08968] flex-shrink-0" />
                       {line}
                     </li>
                   ))}
@@ -355,7 +369,8 @@ export default function CenikPage() {
               </div>
               <Link
                 href="/#kontakt"
-                className="rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber whitespace-nowrap inline-flex items-center justify-center"
+                className="rounded-full bg-[#B08968] px-4 py-2 text-carbon text-sm font-medium transition hover:opacity-90 whitespace-nowrap inline-flex items-center justify-center"
+                style={{ boxShadow: "0 0 24px rgba(176, 137, 104, 0.35)" }}
               >
                 Objednat naměření
               </Link>
@@ -371,12 +386,7 @@ export default function CenikPage() {
           <p className="text-stone mb-8 max-w-md mx-auto">
             Rádi vám připravíme individuální nabídku podle vašeho zadání. Konzultace je zdarma.
           </p>
-          <Link
-            href="/#kontakt"
-            className="inline-block rounded-full bg-champagne px-4 py-2 text-carbon text-sm font-medium shadow-glow transition hover:bg-amber"
-          >
-            Nezávazně poptat
-          </Link>
+          <CenikCTAButton />
           <p className="text-stone text-xs mt-8">
             Ceník platný od ledna 2026 | Ceny bez DPH | Rezervujeme si právo na změny
           </p>

@@ -11,7 +11,7 @@ export default async function AdminInquiriesPage() {
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from("inquiries")
-    .select("id, created_at, name, email, phone, project_type, idea, message")
+    .select("id, created_at, name, email, phone, project_type, idea, message, category")
     .order("created_at", { ascending: false });
 
   if (error) {

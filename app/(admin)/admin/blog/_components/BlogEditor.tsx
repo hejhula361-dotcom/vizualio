@@ -36,6 +36,7 @@ export function BlogEditor({ mode, postId, initial }: BlogEditorProps) {
   const inlineImageInputRef = useRef<HTMLInputElement | null>(null);
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Link.configure({ openOnClick: false, autolink: true, linkOnPaste: true }),
