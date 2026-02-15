@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Portfolio | Vizualio — Fotorealistické 3D vizualizace",
+  title: "Portfolio 3D vizualizací | Domy, kuchyně, rekonstrukce | Vizualio",
   description:
-    "Ukázky našich 3D vizualizací – interiéry, exteriéry i půdorysy. Profesionální vizualizace pro realitky, developery a interiéry."
+    "Ukázky fotorealistických 3D vizualizací rodinných domů, kuchyní, rekonstrukcí i projektů pro realitní kanceláře."
 };
 
 export default function PortfolioLayout({ children }: { children: React.ReactNode }) {

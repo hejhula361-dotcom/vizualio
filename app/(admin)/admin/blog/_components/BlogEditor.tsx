@@ -90,7 +90,8 @@ export function BlogEditor({ mode, postId, initial }: BlogEditorProps) {
     setSaved(false);
     startTransition(async () => {
       try {
-        const content = editor ? editor.getJSON() : null;
+        const rawContent = editor ? editor.getJSON() : null;
+        const content = rawContent != null ? JSON.parse(JSON.stringify(rawContent)) : null;
         if (mode === "create") {
           const res = await createBlogPost({
             title,
@@ -281,6 +282,17 @@ export function BlogEditor({ mode, postId, initial }: BlogEditorProps) {
         </div>
 
         <div className="rich-editor mt-4">{editor ? <EditorContent editor={editor} /> : null}</div>
+
+        <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.02] p-4 text-xs text-stone">
+          <p className="font-semibold uppercase tracking-[0.12em] text-offwhite/90">SEO checklist článku</p>
+          <ul className="mt-3 space-y-2">
+            <li>• Cílit na minimálně 800 slov hodnotného obsahu.</li>
+            <li>• Použít jednu hlavní H1 a smysluplnou strukturu H2/H3.</li>
+            <li>• Přidat FAQ sekci k tématu článku.</li>
+            <li>• Vložit interní odkazy na <code>/cenik</code> a <code>/portfolio</code>.</li>
+            <li>• Krátký, výstižný perex psaný pro vyhledávače i uživatele.</li>
+          </ul>
+        </div>
       </div>
 
       {error && (

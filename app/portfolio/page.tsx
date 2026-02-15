@@ -122,7 +122,7 @@ export default function PortfolioPage() {
       {/* Hero */}
       <section className="section-container pt-12 pb-9 md:pt-12 md:pb-9">
         <div className="text-center">
-          <h1 className="section-title">Portfolio</h1>
+          <h1 className="section-title">Portfolio 3D vizualizací</h1>
           <p className="section-subtitle max-w-2xl mx-auto">
             Ukázky našich 3D vizualizací – interiéry, exteriéry i půdorysy
           </p>
@@ -187,7 +187,7 @@ export default function PortfolioPage() {
               >
                 <PortfolioImage
                   src={item.src}
-                  alt={item.title}
+                  alt={`3D vizualizace: ${item.title}`}
                   priority={i < 6}
                   fill
                   className="object-cover transition-transform duration-300 ease-out group-hover:scale-105 z-10"
@@ -260,7 +260,7 @@ export default function PortfolioPage() {
                 >
                   <PortfolioImage
                     src={currentItem.src}
-                    alt={currentItem.title}
+                    alt={`3D vizualizace detail: ${currentItem.title}`}
                     fullSize
                     width={1200}
                     height={900}
@@ -297,8 +297,49 @@ export default function PortfolioPage() {
         )}
       </AnimatePresence>
 
+      <section className="section-container !pt-0">
+        <div className="rounded-2xl border border-white/10 bg-charcoal/40 p-8 md:p-10">
+          <h2 className="text-2xl font-semibold text-offwhite">Vizualizace rodinných domů</h2>
+          <p className="mt-4 text-sm leading-7 text-stone">
+            Fotorealistická vizualizace rodinného domu pomáhá rozhodovat ještě před zahájením stavby. Umožní vám
+            porovnat materiály fasády, barevné kombinace, tvar střechy i napojení domu na okolní terén. V praxi to
+            znamená méně změn během realizace, rychlejší schvalování projektu a jistotu, že finální dům bude
+            odpovídat původní představě investora. Vizualizace využíváme pro individuální výstavbu, developerské
+            projekty i prezentaci nabídek v online marketingu. Díky realistickému světlu, stínům a detailům získáte
+            přesný obraz budoucího výsledku a můžete lépe plánovat rozpočet i harmonogram stavby.
+          </p>
+
+          <h2 className="mt-8 text-xl font-semibold text-offwhite">Vizualizace kuchyní a interiérů</h2>
+          <p className="mt-3 text-sm leading-7 text-stone">
+            U interiérových návrhů řešíme dispozici, ergonomii, osvětlení i návaznost materiálů. 3D vizualizace
+            kuchyně vám pomůže správně zvolit uspořádání pracovní zóny, úložné prostory i styl celé místnosti.
+          </p>
+
+          <h2 className="mt-8 text-xl font-semibold text-offwhite">Vizualizace rekonstrukcí bytů</h2>
+          <p className="mt-3 text-sm leading-7 text-stone">
+            Před rekonstrukcí bytu ukážeme přesnou podobu navrhovaných změn, takže se snáz rozhodnete o rozsahu prací
+            a sladíte očekávání všech zúčastněných.
+          </p>
+
+          <h2 className="mt-8 text-xl font-semibold text-offwhite">Vizualizace pro realitní kanceláře</h2>
+          <p className="mt-3 text-sm leading-7 text-stone">
+            Realitním kancelářím pomáháme s prezentací nemovitostí, které jsou teprve ve výstavbě nebo před
+            rekonstrukcí. Silnější vizuál zvyšuje míru prokliků i zájem o prohlídku.
+          </p>
+
+          <div className="mt-8">
+            <Link
+              href="/cenik"
+              className="inline-flex items-center rounded-full bg-champagne px-4 py-2 text-sm font-medium text-carbon shadow-glow transition hover:bg-amber"
+            >
+              Zobrazit ceník vizualizací
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="section-container">
+      <section className="section-container !pt-0">
         <div className="rounded-2xl border border-white/10 border-dashed bg-charcoal/30 p-12 text-center">
           <h3 className="text-2xl font-semibold text-offwhite mb-4">Další realizace brzy</h3>
           <p className="text-stone max-w-md mx-auto mb-6">

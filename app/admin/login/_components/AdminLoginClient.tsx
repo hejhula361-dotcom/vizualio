@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CONTACT_EMAIL } from "@/lib/site";
 import { signIn } from "next-auth/react";
 
 export function AdminLoginClient({ from }: { from: string }) {
@@ -26,8 +27,8 @@ export function AdminLoginClient({ from }: { from: string }) {
 
         <p className="mt-6 text-xs text-stone">
           Nemáte přístup? Napište na{" "}
-          <a className="text-champagne hover:text-amber" href="mailto:info@vizualio.cz">
-            info@vizualio.cz
+          <a className="text-champagne hover:text-amber" href={`mailto:${CONTACT_EMAIL}`}>
+            {CONTACT_EMAIL}
           </a>
           .
         </p>

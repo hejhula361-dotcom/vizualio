@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { CheckCircle2, Clock, Star, ImageIcon } from "lucide-react";
+import { CheckCircle2, ChevronDown, Clock, Star, ImageIcon } from "lucide-react";
 import { CenikScrollSpy } from "@/app/cenik/_components/CenikScrollSpy";
 
 const fadeInUp = {
@@ -118,6 +118,24 @@ const extraServices = [
 ];
 
 const CTA_GOLD = "#C6A67C";
+const cenikFaq = [
+  {
+    question: "Kolik času trvá složitý projekt?",
+    answer: "5–10 pracovních dní pro vily, paláce a velké developerské projekty."
+  },
+  {
+    question: "Je možné expres dodání?",
+    answer: "Ano, +1 000 Kč za dodání do 24 hodin u standardních projektů. U složitějších zakázek individuálně."
+  },
+  {
+    question: "Co potřebujete pro zahájení?",
+    answer: "Půdorys, rozměry a reference (fotky nebo materiálové podklady). Čím více podkladů, tím přesnější výsledek."
+  },
+  {
+    question: "Kolik kol úprav je v ceně?",
+    answer: "Standardně 2 kola zdarma, u komplexních projektů 1–2 kola zdarma, větší zakázky řešíme individuálně."
+  }
+];
 
 function CenikCTAButton() {
   return (
@@ -137,13 +155,27 @@ function CenikCTAButton() {
 }
 
 export default function CenikPage() {
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: cenikFaq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer
+      }
+    }))
+  };
+
   return (
     <div className="pb-24">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <CenikScrollSpy />
       {/* Hero */}
       <section className="section-container pt-12 pb-6 md:pt-12 md:pb-6">
         <motion.div {...fadeInUp} className="text-center">
-          <h1 className="section-title">Ceník 3D Vizualizací</h1>
+          <h1 className="section-title">Ceník 3D vizualizací</h1>
           <p className="section-subtitle max-w-2xl mx-auto">
             Profesionální vizualizace pro realitky, developery a interiéry
           </p>
@@ -167,6 +199,41 @@ export default function CenikPage() {
             Naše portfolio
           </Link>
         </motion.div>
+      </section>
+
+      <section className="section-container">
+        <div className="mb-4 flex flex-col items-center gap-2">
+          <p className="text-sm font-medium text-offwhite">Kompletní ceník níže</p>
+          <ChevronDown className="h-5 w-5 text-champagne" />
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-charcoal/40 p-8 md:p-10">
+          <h2 className="text-2xl font-semibold text-offwhite">Kolik stojí vizualizace stavby domu?</h2>
+          <p className="mt-3 text-sm leading-7 text-stone">
+            Cena vizualizace stavby domu závisí na rozsahu projektu, okolním terénu a počtu výstupů. U rodinných domů obvykle
+            připravujeme několik pohledů, které usnadní rozhodování před zahájením realizace.
+          </p>
+
+          <h2 className="mt-8 text-xl font-semibold text-offwhite">Cena vizualizace rekonstrukce bytu</h2>
+          <p className="mt-3 text-sm leading-7 text-stone">
+            Rekonstrukce bytu vyžaduje přesné plánování dispozice, materiálů a osvětlení. Vizualizace pomůže odhalit
+            slabá místa návrhu předem a předejít vícenákladům během realizace.
+          </p>
+
+          <h2 className="mt-8 text-xl font-semibold text-offwhite">Cena vizualizace kuchyně</h2>
+          <p className="mt-3 text-sm leading-7 text-stone">
+            U kuchyní je klíčová ergonomie, návaznost pracovních zón i výběr povrchů. Výsledná cena se odvíjí od
+            složitosti prostoru a úrovně detailu, kterou chcete pro prezentaci nebo výrobu.
+          </p>
+
+          <h2 className="mt-8 text-xl font-semibold text-offwhite">Cena vizualizace pro realitní kanceláře</h2>
+          <p className="mt-3 text-sm leading-7 text-stone">
+            Pro realitní kanceláře připravujeme vizualizace, které zvyšují atraktivitu nabídky u novostaveb i
+            rekonstrukcí. Cena se určuje podle počtu jednotek, typu nemovitosti a požadované rychlosti dodání.
+          </p>
+          <p className="mt-8 text-xs text-stone">
+            Ceník platný od ledna 2026 | Ceny bez DPH | Rezervujeme si právo na změny
+          </p>
+        </div>
       </section>
 
       {/* Vizualizace Interiéru */}
@@ -387,10 +454,21 @@ export default function CenikPage() {
             Rádi vám připravíme individuální nabídku podle vašeho zadání. Konzultace je zdarma.
           </p>
           <CenikCTAButton />
-          <p className="text-stone text-xs mt-8">
-            Ceník platný od ledna 2026 | Ceny bez DPH | Rezervujeme si právo na změny
-          </p>
         </motion.div>
+      </section>
+
+      <section className="section-container !pt-8">
+        <div className="rounded-2xl border border-white/10 bg-charcoal/40 p-8">
+          <h2 className="text-2xl font-semibold text-offwhite">Časté dotazy k ceně vizualizací</h2>
+          <div className="mt-6 space-y-4">
+            {cenikFaq.map((item) => (
+              <div key={item.question} className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+                <h3 className="text-sm font-semibold text-offwhite">{item.question}</h3>
+                <p className="mt-2 text-sm text-stone">{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );

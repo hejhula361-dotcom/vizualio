@@ -5,18 +5,19 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LogOut, Mail, Phone } from "lucide-react";
+import { LogOut, Mail, Menu, Phone, X } from "lucide-react";
+import { useAdminMenu } from "@/app/context/AdminMenuContext";
 import { useSectionColor } from "@/app/context/SectionColorContext";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 const navLinks = [
-  { href: "#proc", label: "Proč my" },
+  { href: "/#proc", label: "Proč my" },
   { href: "/portfolio", label: "Portfolio" },
   { href: "/blog", label: "Blog" },
   { href: "/cenik", label: "Ceník" },
-  { href: "#kontakt", label: "Kontakt" }
+  { href: "/#kontakt", label: "Kontakt" }
 ];
 
-const MOBILE_EMAIL = "info@vizualio.cz";
 const MOBILE_PHONE_1 = "721 369 070";
 const MOBILE_PHONE_2 = "725 486 505";
 
@@ -60,6 +61,7 @@ export default function Navbar() {
   const isPortal = isAdmin || isAccount || isAuth;
 
   const closeMenu = () => setMenuOpen(false);
+  const { menuOpen: adminMenuOpen, setMenuOpen: setAdminMenuOpen } = useAdminMenu();
 
   if (isPortal) {
     return (
@@ -69,6 +71,20 @@ export default function Navbar() {
             <span className="logo-gold h-28 w-28 flex-shrink-0" role="img" aria-hidden="true" />
           </Link>
           <div className="flex items-center gap-2">
+            {/* Admin mobil: hamburger místo tlačítek */}
+            {isAdmin ? (
+              <button
+                type="button"
+                onClick={() => setAdminMenuOpen((o) => !o)}
+                className="md:hidden flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-offwhite/90 transition hover:bg-white/10"
+                aria-label={adminMenuOpen ? "Zavřít menu" : "Otevřít menu"}
+                aria-expanded={adminMenuOpen}
+              >
+                {adminMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            ) : null}
+            {/* Desktop admin / účtu / login: tlačítka */}
+            <div className={`${isAdmin ? "hidden md:flex" : "flex"} items-center gap-2`}>
             {isAccount && (
               <button
                 type="button"
@@ -85,6 +101,7 @@ export default function Navbar() {
             >
               Zpět na web
             </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -117,7 +134,7 @@ export default function Navbar() {
           </nav>
           {/* Desktop: tlačítko Spolupracovat */}
           <motion.a
-            href="#kontakt"
+            href="/#kontakt"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className={`hidden md:inline-flex rounded-full px-4 py-2 text-carbon text-sm font-medium transition ${
@@ -191,7 +208,7 @@ export default function Navbar() {
                 ))}
                 <div className="mt-6 pt-6 border-t border-white/10">
                   <Link
-                    href="#kontakt"
+                    href="/#kontakt"
                     onClick={closeMenu}
                     className="rounded-full bg-champagne px-5 py-3 text-carbon text-sm font-semibold shadow-glow transition hover:bg-amber w-full inline-block text-center"
                   >
@@ -200,11 +217,11 @@ export default function Navbar() {
                 </div>
                 <div className="mt-6 space-y-3">
                   <a
-                    href={`mailto:${MOBILE_EMAIL}`}
+                    href={`mailto:${CONTACT_EMAIL}`}
                     className="flex items-center gap-3 text-sm text-stone hover:text-champagne transition"
                   >
                     <Mail className="h-4 w-4 flex-shrink-0 text-champagne" />
-                    {MOBILE_EMAIL}
+                    {CONTACT_EMAIL}
                   </a>
                   <a
                     href={`tel:+420721369070`}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { FileText, Inbox, LayoutDashboard, LogOut, Shield, Star, Users, type LucideIcon } from "lucide-react";
+import { ExternalLink, FileText, Inbox, LogOut, Shield, Star, Users, type LucideIcon } from "lucide-react";
 
 type UserRole = "superadmin" | "admin" | "editor";
 
@@ -15,7 +15,6 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: "/admin", label: "Přehled", icon: LayoutDashboard },
   { href: "/admin/inquiries", label: "Poptávky", icon: Inbox },
   { href: "/admin/clients", label: "Klienti", icon: Users, minRole: "admin" },
   { href: "/admin/ratings", label: "Hodnocení", icon: Star, minRole: "superadmin" },
@@ -66,6 +65,15 @@ export function AdminNav({ role }: { role: UserRole }) {
         <LogOut className="h-4 w-4 text-champagne" />
         Odhlásit se
       </button>
+
+      {/* Zpět na web – jen na mobilu (v hamburger sidebaru) */}
+      <Link
+        href="/"
+        className="mt-3 flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-offwhite/80 transition hover:bg-white/5 md:hidden"
+      >
+        <ExternalLink className="h-4 w-4 text-champagne" />
+        Zpět na web
+      </Link>
     </nav>
   );
 }

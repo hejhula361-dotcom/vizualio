@@ -60,7 +60,7 @@ export default async function AdminUsersPage() {
 
       <div className="mt-6">
         <GlassCard>
-          <div className="glass-card-header grid grid-cols-[1fr,180px,200px,120px] gap-3">
+          <div className="grid w-full min-w-0 grid-cols-[1fr,180px,200px,120px] gap-3 border-b border-white/10 px-4 py-3 text-xs uppercase tracking-[0.2em] text-stone">
             <span>Uživatel</span>
             <span>Role</span>
             <span>Poslední přihlášení</span>
@@ -68,7 +68,10 @@ export default async function AdminUsersPage() {
           </div>
           <GlassCardBody>
             {(users ?? []).map((u) => (
-              <div key={u.id} className="table-row grid grid-cols-[1fr,180px,200px,120px] gap-3 items-center">
+              <div
+                key={u.id}
+                className="grid w-full min-w-0 grid-cols-[1fr,180px,200px,120px] gap-3 items-center px-4 py-3 transition hover:bg-white/[0.02]"
+              >
                 <form action={updateUserRole} className="contents">
                   <div>
                     <p className="text-sm font-semibold text-offwhite">{u.name || "—"}</p>

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter, Space_Grotesk } from "next/font/google";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { ConditionalFooter } from "@/components/ConditionalFooter";
 import { Providers } from "@/app/providers";
 import { SupabasePreconnect } from "@/components/SupabasePreconnect";
+import { buildDefaultMetadata } from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,24 +19,18 @@ const grotesk = Space_Grotesk({
   display: "swap"
 });
 
-export const metadata: Metadata = {
-  title: "Vizualio — Fotorealistické 3D vizualizace",
-  description: "Luxusní 3D vizualizace interiérů, exteriérů a produktů.",
-  icons: {
-    icon: "/img/logo.svg"
-  }
-};
+export const metadata: Metadata = buildDefaultMetadata();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="cs" className={`scroll-smooth ${inter.variable} ${grotesk.variable}`}>
+    <html lang="cs" className={`scroll-smooth scroll-pt-20 ${inter.variable} ${grotesk.variable}`}>
       <body className="bg-carbon text-offwhite min-h-screen">
         <SupabasePreconnect />
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <ConditionalFooter />
           </div>
         </Providers>
       </body>

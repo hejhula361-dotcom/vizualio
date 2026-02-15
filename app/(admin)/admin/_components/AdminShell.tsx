@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { useAdminMenu } from "@/app/context/AdminMenuContext";
 import { AdminNav } from "@/app/admin/_components/AdminNav";
 
 type UserRole = "superadmin" | "admin" | "editor";
@@ -14,13 +14,13 @@ type AdminShellProps = {
 };
 
 export function AdminShell({ role, userEmail, children }: AdminShellProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const { menuOpen, setMenuOpen } = useAdminMenu();
   const pathname = usePathname();
 
   // Zavřít menu po navigaci (klik na odkaz)
   useEffect(() => {
     setMenuOpen(false);
-  }, [pathname]);
+  }, [pathname, setMenuOpen]);
 
   const sidebarContent = (
     <>
@@ -40,21 +40,7 @@ export function AdminShell({ role, userEmail, children }: AdminShellProps) {
   );
 
   return (
-    <div className="grid min-h-[80vh] grid-cols-1 bg-carbon md:grid-cols-[260px,1fr]">
-      {/* Mobile: horní lišta s hamburgerem */}
-      <div className="sticky top-0 z-20 flex items-center gap-3 border-b border-white/10 bg-charcoal/90 px-4 py-3 backdrop-blur-lg md:hidden">
-        <button
-          type="button"
-          onClick={() => setMenuOpen((o) => !o)}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-offwhite/90 transition hover:bg-white/10"
-          aria-label={menuOpen ? "Zavřít menu" : "Otevřít menu"}
-          aria-expanded={menuOpen}
-        >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-        <span className="font-semibold tracking-tight text-offwhite">Vizualio Admin</span>
-      </div>
-
+    <div className="grid min-h-[80vh] grid-cols-1 bg-carbon md:min-h-[calc(100vh-5rem)] md:h-[calc(100vh-5rem)] md:grid-cols-[260px,1fr]">
       {/* Mobile: overlay při otevřeném menu */}
       {menuOpen && (
         <button
@@ -70,7 +56,7 @@ export function AdminShell({ role, userEmail, children }: AdminShellProps) {
         className={`
           fixed inset-y-0 left-0 z-40 flex w-[260px] max-w-[85vw] flex-col border-r border-white/10 bg-charcoal/95 shadow-xl backdrop-blur-lg
           transition-transform duration-200 ease-out
-          md:static md:max-w-none md:translate-x-0 md:shadow-none
+          md:static md:min-h-[calc(100vh-5rem)] md:max-w-none md:translate-x-0 md:shadow-none
           ${menuOpen ? "translate-x-0" : "-translate-x-full"}
         `}
         aria-hidden={!menuOpen}
